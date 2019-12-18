@@ -376,6 +376,17 @@ public class EGroumBuilder {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (MethodDeclaration method : type.getMethods())
 			if (configuration.usageExamplePredicate.matches(method)) {
+				
+				type.getFields();
+				
+				
+				
+				ITypeBinding typeBind = type.resolveBinding();
+				ITypeBinding superTypeBind = typeBind.getSuperclass();
+				superTypeBind.getName();
+		        ITypeBinding[] interfaceBinds = typeBind.getInterfaces();      
+
+				
 				EGroumGraph g = buildGroum(method, path, prefix + type.getName().getIdentifier() + ".");
 				if (configuration.usageExamplePredicate.matches(g))
 					groums.add(g);
@@ -387,7 +398,7 @@ public class EGroumBuilder {
 
 	EGroumGraph buildGroum(MethodDeclaration method, String filepath, String name) {
 		String sig = JavaASTUtil.buildSignature(method);
-		System.out.println(filepath + " " + name + sig);
+		System.out.println("EGroumBuilder buildGroum:" + filepath + " " + name + sig);
 		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false), configuration);
 		g.setFilePath(filepath);
 		g.setName(name + sig);

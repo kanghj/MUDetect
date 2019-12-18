@@ -15,19 +15,30 @@ import java.util.stream.Collectors;
 import static de.tu_darmstadt.stg.mudetect.aug.AUGTestUtils.exportAUGsAsPNG;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClasses;
 
-public class Debug {
+public class Debug2 {
     @Test
     public void debug() {
-        String code = "class C {\n" + 
-        		"	private final String HMM = \"1\";\n" + 
-        		"	\n" + 
-        		"    void m(java.io.InputStream is) {\n" + 
-        		"       \n" + 
-        		"        	if (is.toString().equals(HMM)) return;\n" + 
-        		"            is.read();\n" + 
-        		"       \n" + 
-        		"    }\n" + 
-        		"}";
+        String code = "import java.util.ArrayList;\n" + 
+        		"import java.util.HashMap;\n" + 
+        		"import java.util.List;\n" + 
+        		"import java.util.Map;\n" + 
+        		"\n" + 
+        		"public class Test {\n" + 
+        		"	public static void main() {\n" + 
+        		"		Map<String, Integer> map = new HashMap<>();\n" + 
+        		"		map.entrySet().iterator().next();\n" + 
+        		"		map.entrySet().iterator().next();\n" + 
+        		"		\n" + 
+        		"		List<String> hellos = new ArrayList<>();\n" + 
+        		"		List<String> hellos1 = new ArrayList<>();\n" + 
+        		"		hellos.add(\"hihi\");\n" + 
+        		"		for (int i = 0; i < hellos.size(); i++) {\n" + 
+        		"			hellos1.add(\"hihi\");\n" + 
+        		"		}\n" + 
+        		"	}\n" + 
+        		"\n" + 
+        		"}\n" + 
+        		"";
 
         ArrayList<APIUsageExample> augs = buildAUGsForClasses(new String[]{code, code});
         exportAUGsAsPNG(augs, "./output/", "Debug-aug");
@@ -57,15 +68,3 @@ public class Debug {
     }
 }
 
-class C {
-	private final String HMM = "1";
-	
-    void m(java.io.InputStream is) {
-        try {
-        	if (is.toString().equals(HMM)) return;
-            is.read();
-        } catch (IOException e) {
-            // ignore
-        }
-    }
-}

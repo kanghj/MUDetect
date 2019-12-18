@@ -32,9 +32,11 @@ public class EGroumGraph implements Serializable {
 	
 	public EGroumGraph(MethodDeclaration md, EGroumBuildingContext context, AUGConfiguration configuration) {
 		this(context, configuration);
+		
 		if (isTooSmall(md))
 			return;
 		context.addScope();
+		
 		context.setMethod(md);
 		entryNode = new EGroumEntryNode(md, ASTNode.METHOD_DECLARATION, "START");
 		nodes.add(entryNode);

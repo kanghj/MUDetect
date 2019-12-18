@@ -19,7 +19,13 @@ public class AUGTestUtils {
 
     public static void exportAUGasPNG(APIUsageGraph aug, String filePath) {
         try {
+        	if (aug.edgeSet().size() > 250) {
+        		System.out.println("Not exporting because its too big");
+        		return;
+        	}
+        	
             new DisplayAUGDotExporter().toPNGFile(aug, new File(filePath));
+            System.out.println("Exported");
         } catch (Exception e) {
             throw new RuntimeException("failed to export DOT as PNG", e);
         }

@@ -19,7 +19,7 @@ import java.util.function.Function;
 
 public class AUGDotExporter {
     private static final String WINDOWS_EXEC_DOT = "D:/Program Files (x86)/Graphviz2.36/bin/dot.exe";	// Windows
-    private static final String LINUX_EXEC_DOT = "dot";	// Linux
+    private static final String LINUX_EXEC_DOT = "/anaconda3/bin/dot";	// Linux
     private static String EXEC_DOT = null;
 
     static {

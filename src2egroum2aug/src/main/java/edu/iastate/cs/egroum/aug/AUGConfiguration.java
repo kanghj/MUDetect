@@ -67,7 +67,7 @@ public class AUGConfiguration {
      * 1 - use names
      * 2 - use values
      */
-    public int encodeConstants = 1;
+    public int encodeConstants = 2;
     
     /**
      * 

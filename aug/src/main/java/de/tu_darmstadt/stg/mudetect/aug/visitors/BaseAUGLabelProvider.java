@@ -170,7 +170,7 @@ public class BaseAUGLabelProvider implements AUGLabelProvider {
 
     @Override
     public String visit(ConstantNode node) {
-        return node.getType();
+        return node.getType() + ":" + node.getName();
     }
 
     @Override
@@ -180,7 +180,8 @@ public class BaseAUGLabelProvider implements AUGLabelProvider {
 
     @Override
     public String visit(LiteralNode node) {
-        return node.getType();
+    	
+        return node.getType() + ":" + node.getValue();
     }
 
     @Override
