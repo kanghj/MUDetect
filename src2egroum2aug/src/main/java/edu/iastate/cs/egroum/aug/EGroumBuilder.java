@@ -15,18 +15,17 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class EGroumBuilder {
-    private final AUGConfiguration configuration;
-    
-    public EGroumBuilder(AUGConfiguration configuration) {
-        this.configuration = configuration;
-    }
+	private final AUGConfiguration configuration;
+
+	public EGroumBuilder(AUGConfiguration configuration) {
+		this.configuration = configuration;
+	}
 
 	/**
-	 * @param classpaths
-	 *            if you are to parse a batch of files, do not include the
-	 *            folder of their class files in the class paths because it
-	 *            is redundant and it will slow the parsing down crazily,
-	 *            i.e., hundreds of times for large project such as JDT core.
+	 * @param classpaths if you are to parse a batch of files, do not include the
+	 *                   folder of their class files in the class paths because it
+	 *                   is redundant and it will slow the parsing down crazily,
+	 *                   i.e., hundreds of times for large project such as JDT core.
 	 */
 	public ArrayList<EGroumGraph> buildBatch(String path, String[] classpaths) {
 		buildStandardJars();
@@ -35,11 +34,10 @@ public class EGroumBuilder {
 	}
 
 	/**
-	 * @param classpaths
-	 *            if you are to parse a batch of files, do not include the
-	 *            folder of their class files in the class paths because it
-	 *            is redundant and it will slow the parsing down crazily,
-	 *            i.e., hundreds of times for large project such as JDT core.
+	 * @param classpaths if you are to parse a batch of files, do not include the
+	 *                   folder of their class files in the class paths because it
+	 *                   is redundant and it will slow the parsing down crazily,
+	 *                   i.e., hundreds of times for large project such as JDT core.
 	 */
 	public ArrayList<EGroumGraph> build(String path, String[] classpaths) {
 		buildStandardJars();
@@ -61,11 +59,14 @@ public class EGroumBuilder {
 				buildJar(file.getAbsolutePath());
 			else if (file.getName().endsWith(".java")) {
 				try {
-					CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(FileIO.readStringFromFile(file.getAbsolutePath()));
-					for (int i = 0 ; i < cu.types().size(); i++)
-						buildHierarchy((AbstractTypeDeclaration) cu.types().get(i), cu.getPackage() == null ? "" : cu.getPackage().getName().getFullyQualifiedName() + ".");
+					CompilationUnit cu = (CompilationUnit) JavaASTUtil
+							.parseSource(FileIO.readStringFromFile(file.getAbsolutePath()));
+					for (int i = 0; i < cu.types().size(); i++)
+						buildHierarchy((AbstractTypeDeclaration) cu.types().get(i),
+								cu.getPackage() == null ? "" : cu.getPackage().getName().getFullyQualifiedName() + ".");
 				} catch (Exception e) {
-					System.err.println("Failed to parse file " + file.getAbsolutePath() + ": " + e.getClass().getName());
+					System.err
+							.println("Failed to parse file " + file.getAbsolutePath() + ": " + e.getClass().getName());
 					// TODO Suppress runtime problems with unknown reason
 				}
 			}
@@ -86,7 +87,7 @@ public class EGroumBuilder {
 		String className = prefix + type.getName().getIdentifier();
 		if (type.getSuperclassType() != null) {
 			String stype = JavaASTUtil.getSimpleType(type.getSuperclassType());
-			HashSet<String> subs =  EGroumBuildingContext.exceptionHierarchy.get(stype);
+			HashSet<String> subs = EGroumBuildingContext.exceptionHierarchy.get(stype);
 			if (subs == null) {
 				subs = new HashSet<>();
 				EGroumBuildingContext.exceptionHierarchy.put(stype, subs);
@@ -156,7 +157,8 @@ public class EGroumBuilder {
 		if (exceptions == null)
 			exceptions = new HashSet<>();
 		for (int i = 0; i < method.thrownExceptionTypes().size(); i++)
-			exceptions.add(JavaASTUtil.getSimpleType((org.eclipse.jdt.core.dom.Type)method.thrownExceptionTypes().get(i)));
+			exceptions.add(
+					JavaASTUtil.getSimpleType((org.eclipse.jdt.core.dom.Type) method.thrownExceptionTypes().get(i)));
 		if (!exceptions.isEmpty())
 			methodExceptions.put(name, exceptions);
 	}
@@ -165,9 +167,9 @@ public class EGroumBuilder {
 		try {
 			JarFile jarFile = new JarFile(jarFilePath);
 			Enumeration<JarEntry> entries = jarFile.entries();
-			while(entries.hasMoreElements()) {
+			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
-				if(entry.getName().endsWith(".class") && entry.getName().startsWith("java")) {
+				if (entry.getName().endsWith(".class") && entry.getName().startsWith("java")) {
 					try {
 						ClassParser parser = new ClassParser(jarFilePath, entry.getName());
 						JavaClass jc = parser.parse();
@@ -181,7 +183,8 @@ public class EGroumBuilder {
 						if (!fieldTypes.isEmpty())
 							EGroumBuildingContext.typeFieldType.put(className, fieldTypes);
 						String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
-						HashMap<String, HashSet<String>> methodExceptions = EGroumBuildingContext.typeMethodExceptions.get(simpleClassName);
+						HashMap<String, HashSet<String>> methodExceptions = EGroumBuildingContext.typeMethodExceptions
+								.get(simpleClassName);
 						if (methodExceptions == null)
 							methodExceptions = new HashMap<>();
 						for (Method method : jc.getMethods())
@@ -190,7 +193,7 @@ public class EGroumBuilder {
 							EGroumBuildingContext.typeMethodExceptions.put(simpleClassName, methodExceptions);
 						if (jc.getSuperclassName() != null) {
 							String stype = FileIO.getSimpleClassName(jc.getSuperclassName());
-							HashSet<String> subs =  EGroumBuildingContext.exceptionHierarchy.get(stype);
+							HashSet<String> subs = EGroumBuildingContext.exceptionHierarchy.get(stype);
 							if (subs == null) {
 								subs = new HashSet<>();
 								EGroumBuildingContext.exceptionHierarchy.put(stype, subs);
@@ -206,7 +209,7 @@ public class EGroumBuilder {
 			jarFile.close();
 		} catch (IOException e) {
 			System.err.println("Error in parsing jar file: " + jarFilePath);
-			//e.printStackTrace();
+			// e.printStackTrace();
 			System.err.println(e.getMessage());
 		}
 	}
@@ -226,72 +229,85 @@ public class EGroumBuilder {
 		if (exceptions == null)
 			exceptions = new HashSet<>();
 		if (method.getExceptionTable() != null)
-			for (String exception: method.getExceptionTable().getExceptionNames())
+			for (String exception : method.getExceptionTable().getExceptionNames())
 				exceptions.add(exception.substring(exception.lastIndexOf('.') + 1));
 		if (!exceptions.isEmpty())
 			methodExceptions.put(name, exceptions);
 	}
-	
+
 	/*
 	 * Modify com.sun.org.apache.bcel.internal.generic.Type.toString()
 	 */
 	private String getSimpleType(Type type) {
-	    return ((type.equals(Type.NULL) || (type.getType() >= Constants.T_UNKNOWN)))? type.getSignature() : signatureToString(type.getSignature());
+		return ((type.equals(Type.NULL) || (type.getType() >= Constants.T_UNKNOWN))) ? type.getSignature()
+				: signatureToString(type.getSignature());
 	}
-	
+
 	/*
-	 * Modify com.sun.org.apache.bcel.internal.classfile.Utility.signatureToString(signature, false)
+	 * Modify com.sun.org.apache.bcel.internal.classfile.Utility.signatureToString(
+	 * signature, false)
 	 */
 	private String signatureToString(String signature) {
-	    try {
-	      switch(signature.charAt(0)) {
-	      case 'B' : return "number"; //return "byte";
-	      case 'C' : return "char";
-	      case 'D' : return "number"; //return "double";
-	      case 'F' : return "number"; //return "float";
-	      case 'I' : return "number"; //return "int";
-	      case 'J' : return "number"; //return "long";
+		try {
+			switch (signature.charAt(0)) {
+			case 'B':
+				return "number"; // return "byte";
+			case 'C':
+				return "char";
+			case 'D':
+				return "number"; // return "double";
+			case 'F':
+				return "number"; // return "float";
+			case 'I':
+				return "number"; // return "int";
+			case 'J':
+				return "number"; // return "long";
 
-	      case 'L' : { // Full class name
-	        int    index = signature.indexOf(';'); // Look for closing `;'
+			case 'L': { // Full class name
+				int index = signature.indexOf(';'); // Look for closing `;'
 
-	        if(index < 0)
-	          throw new ClassFormatException("Invalid signature: " + signature);
+				if (index < 0)
+					throw new ClassFormatException("Invalid signature: " + signature);
 
-	        return compactClassName(signature.substring(1, index));
-	      }
+				return compactClassName(signature.substring(1, index));
+			}
 
-	      case 'S' : return "number"; //return "short";
-	      case 'Z' : return "boolean";
+			case 'S':
+				return "number"; // return "short";
+			case 'Z':
+				return "boolean";
 
-	      case '[' : { // Array declaration
-	        int n;
-	        StringBuffer brackets;
+			case '[': { // Array declaration
+				int n;
+				StringBuffer brackets;
 
-	        brackets = new StringBuffer(); // Accumulate []'s
+				brackets = new StringBuffer(); // Accumulate []'s
 
-	        // Count opening brackets and look for optional size argument
-	        for(n=0; signature.charAt(n) == '['; n++)
-	          brackets.append("[]");
+				// Count opening brackets and look for optional size argument
+				for (n = 0; signature.charAt(n) == '['; n++)
+					brackets.append("[]");
 
-	        // The rest of the string denotes a `<field_type>'
-	        String type = signatureToString(signature.substring(n));
+				// The rest of the string denotes a `<field_type>'
+				String type = signatureToString(signature.substring(n));
 
-	        return type + brackets.toString();
-	      }
+				return type + brackets.toString();
+			}
 
-	      case 'V' : return "void";
+			case 'V':
+				return "void";
 
-	      default  : throw new ClassFormatException("Invalid signature: `" +
-	                                            signature + "'");
-	      }
-	    } catch(StringIndexOutOfBoundsException e) { // Should never occur
-	      throw new ClassFormatException("Invalid signature: " + e + ":" + signature);
-	    }
+			default:
+				throw new ClassFormatException("Invalid signature: `" + signature + "'");
+			}
+		} catch (StringIndexOutOfBoundsException e) { // Should never occur
+			throw new ClassFormatException("Invalid signature: " + e + ":" + signature);
+		}
 	}
-	
+
 	/*
-	 * Modify com.sun.org.apache.bcel.internal.classfile.Utility.compactClassName(long class name, false)
+	 * Modify
+	 * com.sun.org.apache.bcel.internal.classfile.Utility.compactClassName(long
+	 * class name, false)
 	 */
 	public static final String compactClassName(String className) {
 		int index = className.indexOf('<');
@@ -323,18 +339,14 @@ public class EGroumBuilder {
 		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setCompilerOptions(options);
-		parser.setEnvironment(
-				classpaths == null ? new String[0] : classpaths,
-				new String[]{}, 
-				new String[]{}, 
-				true);
+		parser.setEnvironment(classpaths == null ? new String[0] : classpaths, new String[] {}, new String[] {}, true);
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 		parser.createASTs(paths, null, new String[0], r, null);
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		for (String path : cus.keySet()) {
 			CompilationUnit cu = cus.get(path);
-			for (int i = 0 ; i < cu.types().size(); i++)
+			for (int i = 0; i < cu.types().size(); i++)
 				if (cu.types().get(i) instanceof TypeDeclaration)
 					groums.addAll(buildGroums((TypeDeclaration) cu.types().get(i), path, ""));
 		}
@@ -357,16 +369,15 @@ public class EGroumBuilder {
 	}
 
 	/**
-	 * @param classpaths
-	 *            if you are to parse a batch of files, do not include the
-	 *            folder of their class files in the class paths because it
-	 *            is redundant and it will slow the parsing down crazily,
-	 *            i.e., hundreds of times for large project such as JDT core.
+	 * @param classpaths if you are to parse a batch of files, do not include the
+	 *                   folder of their class files in the class paths because it
+	 *                   is redundant and it will slow the parsing down crazily,
+	 *                   i.e., hundreds of times for large project such as JDT core.
 	 */
 	public ArrayList<EGroumGraph> buildGroums(String sourceCode, String path, String name, String[] classpaths) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(sourceCode, path, name, classpaths);
-		for (int i = 0 ; i < cu.types().size(); i++)
+		for (int i = 0; i < cu.types().size(); i++)
 			if (cu.types().get(i) instanceof TypeDeclaration)
 				groums.addAll(buildGroums((TypeDeclaration) cu.types().get(i), path, ""));
 		return groums;
@@ -374,23 +385,46 @@ public class EGroumBuilder {
 
 	private ArrayList<EGroumGraph> buildGroums(TypeDeclaration type, String path, String prefix) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
+
+
+		EGroumGraph ctorGroum = null;
+
+		for (MethodDeclaration method : type.getMethods()) {
+			if (method.isConstructor()) {
+				ctorGroum = buildGroum(method, path, prefix + type.getName().getIdentifier() + ".");
+			}
+		}
+
+		// do the main pass
 		for (MethodDeclaration method : type.getMethods())
 			if (configuration.usageExamplePredicate.matches(method)) {
-				
-				type.getFields();
-				
-				
-				
+
 				ITypeBinding typeBind = type.resolveBinding();
 				ITypeBinding superTypeBind = typeBind.getSuperclass();
-				superTypeBind.getName();
-		        ITypeBinding[] interfaceBinds = typeBind.getInterfaces();      
+				ITypeBinding[] interfaceBinds = typeBind.getInterfaces();
 
+				
 				
 				EGroumGraph g = buildGroum(method, path, prefix + type.getName().getIdentifier() + ".");
 				if (configuration.usageExamplePredicate.matches(g))
 					groums.add(g);
 			}
+
+		for (FieldDeclaration f : type.getFields()) {
+			for (int i = 0; i < f.fragments().size(); i++) {
+				VariableDeclarationFragment vdf = (VariableDeclarationFragment) f.fragments().get(i);
+
+				String dimensions = "";
+				for (int j = 0; j < vdf.getExtraDimensions(); j++)
+					dimensions += "[]";
+
+//					groum.join(vdf.getName(), vdf.getInitializer());
+				EGroumGraph g = buildGroum(vdf, path, prefix + type.getName().getIdentifier() + ".");
+				groums.add(g);
+			}
+		}
+		
+
 		for (TypeDeclaration inner : type.getTypes())
 			groums.addAll(buildGroums(inner, path, prefix + type.getName().getIdentifier() + "."));
 		return groums;
@@ -400,6 +434,16 @@ public class EGroumBuilder {
 		String sig = JavaASTUtil.buildSignature(method);
 		System.out.println("EGroumBuilder buildGroum:" + filepath + " " + name + sig);
 		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false), configuration);
+		g.setFilePath(filepath);
+		g.setName(name + sig);
+		return g;
+	}
+	
+	EGroumGraph buildGroum(VariableDeclarationFragment fragment, String filepath, String name) {
+		String sig = fragment.getName().getIdentifier() + "#" + "__FieldOfClass__";
+		
+		System.out.println("EGroumBuilder buildGroum for fragment:" + filepath + " " + name + sig);
+		EGroumGraph g = new EGroumGraph(fragment.getInitializer(), new EGroumBuildingContext(false), configuration);
 		g.setFilePath(filepath);
 		g.setName(name + sig);
 		return g;

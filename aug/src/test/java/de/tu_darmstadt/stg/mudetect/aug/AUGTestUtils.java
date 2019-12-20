@@ -1,5 +1,6 @@
 package de.tu_darmstadt.stg.mudetect.aug;
 
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.dot.DisplayAUGDotExporter;
 
@@ -13,9 +14,16 @@ public class AUGTestUtils {
         Iterator<? extends APIUsageGraph> it = augs.iterator();
         for (int i = 0; it.hasNext() ; i++) {
             APIUsageGraph aug = it.next();
+            if (aug instanceof APIUsageExample) {
+            	exportAUGasPNG(aug, new File(filePath, baseName + "-" + i + "-" 
+            + ((APIUsageExample)aug).getLocation().getMethodSignature() + ".png").getPath());
+            }
             exportAUGasPNG(aug, new File(filePath, baseName + "-" + i + ".png").getPath());
         }
     }
+    
+    
+ 
 
     public static void exportAUGasPNG(APIUsageGraph aug, String filePath) {
         try {

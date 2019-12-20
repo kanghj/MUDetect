@@ -4,6 +4,9 @@ import de.tu_darmstadt.stg.mudetect.aug.builder.APIUsageExampleBuilder;
 import de.tu_darmstadt.stg.mudetect.aug.model.*;
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.SimpleType;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -63,7 +66,7 @@ public class AUGBuilder {
 
     public Collection<APIUsageExample> build(String source, String basePath, String projectName, String[] classpath) {
         return new EGroumBuilder(configuration).buildGroums(source, basePath, projectName, classpath).stream()
-                .map(this::toAUG).collect(Collectors.toList());
+                .map(groum -> toAUG(source, basePath, projectName, classpath, groum)).collect(Collectors.toList());
     }
 
     private APIUsageExample toAUG(EGroumGraph groum) {
@@ -79,7 +82,29 @@ public class AUGBuilder {
                 addEdge(builder, edge);
             }
         }
-        return builder.build();
+        APIUsageExample aug = builder.build();
+        
+        return aug;
+    }
+    
+    private APIUsageExample toAUG(String source, String basePath, String projectName, String[] classpath, EGroumGraph groum) {
+    	APIUsageExample aug = toAUG(groum);
+    	
+    	CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(source, basePath, projectName, classpath);
+    	
+    	for (int i = 0; i < cu.types().size(); i++)
+			if (cu.types().get(i) instanceof TypeDeclaration) {
+				TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
+				List interfaces = (List) typ.superInterfaceTypes();
+				for (Object interfaceObj : interfaces) {
+					SimpleType type = (SimpleType) interfaceObj;
+					System.out.println("interface = "+ type.getName().toString());
+					
+					aug.interfaces.add(type.getName().toString());
+				}
+			}
+    	
+    	return aug;
     }
 
     private void addEdge(APIUsageExampleBuilder builder, EGroumEdge edge) {
@@ -173,7 +198,12 @@ public class AUGBuilder {
                 builder.withVariable(nodeId, dataType, dataName);
                 return;
             } else if (node.astNodeType == ASTNode.FIELD_ACCESS) {
+            	// HJ TODO: not all field accesses are constants!
                 builder.withConstant(nodeId, dataType, dataName, dataValue);
+                
+                builder.fieldsUsed.add(dataName);
+                // HJ: cache for easy lookup
+                
                 return;
             } else if (LITERAL_AST_NODE_TYPES.contains(node.astNodeType)) {
                 if (dataName != null) {

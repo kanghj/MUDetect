@@ -3,6 +3,7 @@ package de.tu_darmstadt.stg.mudetect.aug.model;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -13,9 +14,27 @@ public class APIUsageGraph extends DirectedMultigraph<Node, Edge> {
     private boolean frozen;
     private int hash;
     private Set<Node> meaningfullActionNodesCache = null;
+    
+    
+    public Set<String> interfaces = new HashSet<>();
 
+    
+    public Set<String> fieldsUsed = new HashSet<>(); // cached for easy lookup
+    
     public APIUsageGraph() {
         super(Edge.class);
+    }
+    
+    
+    public APIUsageGraph(APIUsageGraph oldGraph) {
+        this();
+        for (Node node : oldGraph.vertexSet()) {
+        	this.addVertex(node);
+        }
+        
+        for (Edge edge : oldGraph.edgeSet()) {
+        	this.addEdge(edge.getSource(), edge.getTarget(), edge);
+        }
     }
 
     public int getNodeSize() {

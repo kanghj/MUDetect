@@ -22,6 +22,8 @@ public class APIUsageExampleBuilder {
     private final Set<Edge> edges = new HashSet<>();
     private final Location location;
 
+    public Set<String> fieldsUsed = new HashSet<>(); // HJ: cached for easy lookup
+    
     public static APIUsageExampleBuilder buildAUG(Location location) {
         return new APIUsageExampleBuilder(location);
     }
@@ -212,6 +214,8 @@ public class APIUsageExampleBuilder {
         for (Edge edge : edges) {
             aug.addEdge(edge.getSource(), edge.getTarget(), edge);
         }
+        
+        aug.fieldsUsed = new HashSet<>(fieldsUsed);
         return aug;
     }
 }
