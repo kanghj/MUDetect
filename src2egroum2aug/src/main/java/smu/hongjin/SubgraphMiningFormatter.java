@@ -21,62 +21,88 @@ import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
  */
 public class SubgraphMiningFormatter {
 
-	public static void convert(Collection<APIUsageExample> augs, int i, Map<String, Integer> vertexLabels, Map<String, Integer> edgeLabels, BufferedWriter writer) throws IOException {
+//	public static void convert(Collection<APIUsageExample> augs, int i, Map<String, Integer> vertexLabels, Map<String, Integer> edgeLabels, BufferedWriter writer) throws IOException {
+//		// along the way,
+//		// we collect the labels of vertices and edges
+//
+//		
+//		for (APIUsageExample aug : augs) {
+//			writer.write("t " + "# " + i + "\n");
+//
+//			Map<Node, Integer> vertexNumbers = new HashMap<>();
+//			
+//			int nodeNumber = 0;
+//			for (Node vertex : aug.vertexSet()) {
+//				 String nodeLabel = new BaseAUGLabelProvider().getLabel(vertex);
+//				 
+//				 if (!vertexLabels.containsKey(nodeLabel)) {
+//					 vertexLabels.put(nodeLabel, vertexLabels.size());	 
+//				 }
+//				 int nodeLabelIndex = vertexLabels.get(nodeLabel);
+//				 
+//				 writer.write("v " + nodeNumber + " " + nodeLabelIndex+ "\n");
+//				 
+//				 
+//				 vertexNumbers.put(vertex, nodeNumber);
+//				 
+//				 nodeNumber+=1;
+//			}
+//			
+//			//
+//			
+//			for (Edge edge : aug.edgeSet()) {
+//				String edgeLabel = new BaseAUGLabelProvider().getLabel(edge);
+//				
+//				if (!edgeLabels.containsKey(edgeLabel)) {
+//					edgeLabels.put(edgeLabel, edgeLabels.size());	 
+//				}
+//				int edgeLabelIndex = edgeLabels.get(edgeLabel);
+//				 
+//				
+//				int sourceNumber = vertexNumbers.get(edge.getSource());
+//				int targetNumber = vertexNumbers.get(edge.getTarget());
+//				
+//				writer.write("e " + sourceNumber + " " + targetNumber + " " + edgeLabelIndex+ "\n");
+//			}
+//			i++;
+//		}
+//		
+//	}
+//	
+	/**
+	 * This mutates vertexLabels and edgeLabels
+	 * @param eaugs
+	 * @param type
+	 * @param i
+	 * @param vertexLabels
+	 * @param edgeLabels
+	 * @param label
+	 * @param quantity
+	 * @param writer
+	 * @throws IOException
+	 */
+	public static void convert(Collection<EnhancedAUG> eaugs, Class<?> type ,int i, 
+			Map<String, Integer> vertexLabels, Map<String, Integer> edgeLabels, 
+			String fileId,
+			Map<String, String> labels, int quantity,
+			BufferedWriter writer) throws IOException {
 		// along the way,
 		// we collect the labels of vertices and edges
-
-		
-		for (APIUsageExample aug : augs) {
-			writer.write("t " + "# " + i + "\n");
-
-			Map<Node, Integer> vertexNumbers = new HashMap<>();
-			
-			int nodeNumber = 0;
-			for (Node vertex : aug.vertexSet()) {
-				 String nodeLabel = new BaseAUGLabelProvider().getLabel(vertex);
-				 
-				 if (!vertexLabels.containsKey(nodeLabel)) {
-					 vertexLabels.put(nodeLabel, vertexLabels.size());	 
-				 }
-				 int nodeLabelIndex = vertexLabels.get(nodeLabel);
-				 
-				 writer.write("v " + nodeNumber + " " + nodeLabelIndex+ "\n");
-				 
-				 
-				 vertexNumbers.put(vertex, nodeNumber);
-				 
-				 nodeNumber+=1;
-			}
-			
-			//
-			
-			for (Edge edge : aug.edgeSet()) {
-				String edgeLabel = new BaseAUGLabelProvider().getLabel(edge);
-				
-				if (!edgeLabels.containsKey(edgeLabel)) {
-					edgeLabels.put(edgeLabel, edgeLabels.size());	 
-				}
-				int edgeLabelIndex = edgeLabels.get(edgeLabel);
-				 
-				
-				int sourceNumber = vertexNumbers.get(edge.getSource());
-				int targetNumber = vertexNumbers.get(edge.getTarget());
-				
-				writer.write("e " + sourceNumber + " " + targetNumber + " " + edgeLabelIndex+ "\n");
-			}
-			i++;
-		}
-		
-	}
-	
-	public static void convert(Collection<EnhancedAUG> eaugs, Class<?> type ,int i, Map<String, Integer> vertexLabels, Map<String, Integer> edgeLabels, BufferedWriter writer) throws IOException {
-		// along the way,
-		// we collect the labels of vertices and edges
-
 		
 		for (EnhancedAUG eaug : eaugs) {
 			APIUsageGraph aug = eaug.aug;
-			writer.write("t " + "# " + i + "\n");
+			
+			if (aug.vertexSet().size() == 0) {
+				continue;
+			}
+			
+			// 
+			String labelId = fileId + " - " + eaug.aug.name;
+			String label = labels.get(labelId);
+			if (label == null) throw new RuntimeException("missing label!");
+			
+			
+			writer.write("t " + "# " + i + " " + label + " " + quantity + "\n");
 
 			Map<Node, Integer> vertexNumbers = new HashMap<>();
 			
@@ -107,6 +133,8 @@ public class SubgraphMiningFormatter {
 			for (APIUsageGraph relAug : eaug.related) {
 				writeEdgesInAug(edgeLabels, writer, relAug, vertexNumbers);				
 			}
+			
+			writer.write("-\n");
 			
 			i++;
 		}

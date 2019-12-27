@@ -3,6 +3,7 @@ package smu.hongjin;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +13,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 
 public class EnhancedAUG {
 
-	APIUsageGraph aug;
+	public APIUsageGraph aug;
 	
 	Set<APIUsageGraph> related = new HashSet<>();
 	Set<String> interfaces = new HashSet<>();
@@ -26,6 +27,7 @@ public class EnhancedAUG {
 	public static Set<EnhancedAUG> buildEnhancedAugs(Set<APIUsageGraph> augs) {
 		
 		Map<String, APIUsageGraph> fieldInit = new HashMap<>();
+		
 		for (APIUsageGraph aug : augs) {
 			if (aug instanceof APIUsageExample) {
 				boolean isFieldInit = ((APIUsageExample)aug).getLocation().getMethodSignature().contains("__FieldOfClass__");
@@ -40,7 +42,7 @@ public class EnhancedAUG {
 		
 		for (APIUsageGraph aug : augs) {
 			if (aug instanceof APIUsageExample) {
-				boolean isCtor = ((APIUsageExample)aug).getLocation().getMethodSignature().contains("<init>");
+				boolean isCtor = aug.isCtor;
 				if (!isCtor) continue;
 				
 				for (String field : aug.fieldsUsed) {
@@ -50,13 +52,20 @@ public class EnhancedAUG {
 		}
 		
 		Set<EnhancedAUG> result = new HashSet<>();
-		for (APIUsageGraph aug : augs) {
+		Iterator<APIUsageGraph> iter = augs.iterator();
+		while (iter.hasNext()) {
+			APIUsageGraph aug = iter.next();
+			
 			Set<String> fieldsUsed = aug.fieldsUsed;
 			Set<APIUsageGraph> relat = new HashSet<>();
 			for (String field : fieldsUsed) {
 				if (!fieldInit.containsKey(field)) continue;
 				
 				relat.add(fieldInit.get(field));
+			}
+			boolean isFieldInit = ((APIUsageExample)aug).getLocation().getMethodSignature().contains("__FieldOfClass__");
+			if (isFieldInit) {
+				continue;
 			}
 			
 			result.add(new EnhancedAUG(aug, relat, aug.interfaces));

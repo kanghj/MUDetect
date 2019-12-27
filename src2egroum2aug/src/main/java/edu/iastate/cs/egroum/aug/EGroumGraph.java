@@ -31,6 +31,10 @@ public class EGroumGraph implements Serializable {
 	protected HashSet<EGroumNode> returns = new HashSet<>();
 	
 	
+	// HJ: it seems to be useful if we know whether its a ctor or not. 
+	public boolean isCtor;
+	
+	
 	// rather than making multiple literal nodes, share them
 	public Map<String, EGroumDataNode> literalNodes= new HashMap<>();
 
@@ -45,6 +49,8 @@ public class EGroumGraph implements Serializable {
 
 	
 		context.setMethod(md);
+		isCtor = md.isConstructor();
+		
 		entryNode = new EGroumEntryNode(md, ASTNode.METHOD_DECLARATION, "START");
 		nodes.add(entryNode);
 		statementNodes.add(entryNode);

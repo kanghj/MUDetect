@@ -121,7 +121,7 @@ public class APIUsageExampleBuilder {
     }
 
     public APIUsageExampleBuilder withLiteral(String nodeId, String typeName, String value) {
-    	System.out.println("API found literal: " + value);
+//    	System.out.println("API found literal: " + value);
         return withNode(nodeId, new LiteralNode(typeName, value));
     }
 
@@ -130,7 +130,7 @@ public class APIUsageExampleBuilder {
     }
 
     public APIUsageExampleBuilder withConstant(String nodeId, String dataType, String dataName, String dataValue) {
-    	System.out.println("API found const: " + dataValue);
+//    	System.out.println("API found const: " + dataValue);
         return withNode(nodeId, new ConstantNode(dataType, dataName, dataValue));
     }
 

@@ -1,9 +1,11 @@
 package edu.iastate.cs.egroum.aug;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import smu.hongjin.EnhancedAUG;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -40,10 +42,11 @@ public class AUGBuilderTestUtils {
         return buildAUGsForClass(classCode, new AUGConfiguration());
     }
     
-    public static Collection<APIUsageExample> buildAUGsForClassFromSomewhereElse(String classCode, String elseWhere, String project, AUGConfiguration configuration) {
+    public static Collection<EnhancedAUG> buildAUGsForClassFromSomewhereElse(String classCode, String elseWhere, String project, AUGConfiguration configuration) {
         AUGBuilder builder = new AUGBuilder(configuration);
         String basePath = elseWhere;
-        return builder.build(classCode, basePath, project, null);
+        Collection<APIUsageExample> aug = builder.build(classCode, basePath, project, null);
+        return EnhancedAUG.buildEnhancedAugs(new HashSet<>(aug));
     }
 
     private static Collection<APIUsageExample> buildAUGsForClass(String classCode, AUGConfiguration configuration) {

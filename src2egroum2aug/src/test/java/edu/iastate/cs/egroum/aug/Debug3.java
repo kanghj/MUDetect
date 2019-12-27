@@ -12,8 +12,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,11 +27,41 @@ import java.util.stream.Collectors;
 import static de.tu_darmstadt.stg.mudetect.aug.AUGTestUtils.exportAUGsAsPNG;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClasses;
 
-public class Debug {
+public class Debug3 {
     @Test
-    public void debug() throws IOException {
-        String code = new String(Files.readAllBytes(
-        		Paths.get("/Users/kanghongjin/Downloads/github-code-search/java.io.ByteArrayOutputStream__toByteArray__0/755/com/ftkj/util/ByteUtil.java")));
+    public void debug() {
+        String code = "interface CI {\n" + 
+        		"\n" + 
+        		"	void get(InputStream is) throws IOException;\n" + 
+        		"	\n" + 
+        		"}\n" + 
+        		"\n" + 
+        		"class C implements CI {\n" + 
+        		"//	private final String HMM = \"1\";\n" + 
+        		"//	public List<String> hellos = Arrays.asList(\"1\",\"2\",\"3\");\n" + 
+        		"//	\n" + 
+        		"	public C() {\n" + 
+        		"//		hellos = Arrays.asList(\"5\",\"6\",\"7\");\n" + 
+        		"	}\n" + 
+        		"	\n" + 
+        		"	@Override\n" + 
+        		"    public void get(java.io.InputStream is) throws IOException {\n" + 
+        		"		java.io.BufferedReader reader = null;\n" + 
+        		"        try {\n" + 
+        		"        	reader = new java.io.BufferedReader(new java.io.FileReader(\"file.txt\"));\n" + 
+        		"//        	if (hellos.isEmpty()) return;\n" + 
+        		"            is.read();\n" + 
+        		"            int i = 0;\n" + 
+        		"            System.out.println(i);\n" + 
+        		"        } catch (IOException e) {\n" + 
+        		"            // ignore\n" + 
+        		"        	return;\n" + 
+        		"        } finally {\n" + 
+        		"        	reader.close();\n" + 
+        		"        }\n" + 
+        		"        is.close();\n" + 
+        		"    }\n" + 
+        		"}";
 
         ArrayList<APIUsageExample> augs = buildAUGsForClasses(new String[]{code});
         exportAUGsAsPNG(augs, "./output/", "Debug-aug");
@@ -82,38 +110,5 @@ public class Debug {
             EGroumGraph egroum = it.next();
             new DotGraph(egroum).toPNG(new File(pathname), name + "-" + i);
         }
-    }
-}
-
-interface CI {
-
-	void get(InputStream is) throws IOException;
-	
-}
-
-class C implements CI {
-//	private final String HMM = "1";
-//	public List<String> hellos = Arrays.asList("1","2","3");
-//	
-	public C() {
-//		hellos = Arrays.asList("5","6","7");
-	}
-	
-	@Override
-    public void get(java.io.InputStream is) throws IOException {
-		java.io.BufferedReader reader = null;
-        try {
-        	reader = new java.io.BufferedReader(new java.io.FileReader("file.txt"));
-//        	if (hellos.isEmpty()) return;
-            is.read();
-            int i = 0;
-            System.out.println(i);
-        } catch (IOException e) {
-            // ignore
-        	return;
-        } finally {
-        	reader.close();
-        }
-        is.close();
     }
 }

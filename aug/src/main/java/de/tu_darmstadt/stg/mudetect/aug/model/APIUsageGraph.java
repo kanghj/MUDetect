@@ -15,10 +15,10 @@ public class APIUsageGraph extends DirectedMultigraph<Node, Edge> {
     private int hash;
     private Set<Node> meaningfullActionNodesCache = null;
     
-    
+    public String name;
     public Set<String> interfaces = new HashSet<>();
 
-    
+    public boolean isCtor;
     public Set<String> fieldsUsed = new HashSet<>(); // cached for easy lookup
     
     public APIUsageGraph() {

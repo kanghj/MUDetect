@@ -387,17 +387,19 @@ public class EGroumBuilder {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 
 
-		EGroumGraph ctorGroum = null;
-
+		// HJ: for our changes, we don't think about this at the method level.
+		// hence if a method matches, we want to grab information from the entire file 
+		boolean typeMatches = false; 
 		for (MethodDeclaration method : type.getMethods()) {
-			if (method.isConstructor()) {
-				ctorGroum = buildGroum(method, path, prefix + type.getName().getIdentifier() + ".");
+			if (configuration.usageExamplePredicate.matches(method)) {
+				typeMatches = true;
 			}
 		}
 
 		// do the main pass
 		for (MethodDeclaration method : type.getMethods())
-			if (configuration.usageExamplePredicate.matches(method)) {
+			if (configuration.usageExamplePredicate.matches(method) // either the method uses the API
+					|| (typeMatches && method.isConstructor())) { // or we want the constructor of a type that uses the API somewhere
 
 				ITypeBinding typeBind = type.resolveBinding();
 				ITypeBinding superTypeBind = typeBind.getSuperclass();
@@ -410,21 +412,22 @@ public class EGroumBuilder {
 					groums.add(g);
 			}
 
-		for (FieldDeclaration f : type.getFields()) {
-			for (int i = 0; i < f.fragments().size(); i++) {
-				VariableDeclarationFragment vdf = (VariableDeclarationFragment) f.fragments().get(i);
-
-				String dimensions = "";
-				for (int j = 0; j < vdf.getExtraDimensions(); j++)
-					dimensions += "[]";
-
-//					groum.join(vdf.getName(), vdf.getInitializer());
-				EGroumGraph g = buildGroum(vdf, path, prefix + type.getName().getIdentifier() + ".");
-				groums.add(g);
+		if (typeMatches) {	// we want all the fields
+			for (FieldDeclaration f : type.getFields()) {
+				for (int i = 0; i < f.fragments().size(); i++) {
+					VariableDeclarationFragment vdf = (VariableDeclarationFragment) f.fragments().get(i);
+	
+					String dimensions = "";
+					for (int j = 0; j < vdf.getExtraDimensions(); j++)
+						dimensions += "[]";
+	
+	//					groum.join(vdf.getName(), vdf.getInitializer());
+					EGroumGraph g = buildGroum(vdf, path, prefix + type.getName().getIdentifier() + ".");
+					groums.add(g);
+				}
 			}
 		}
 		
-
 		for (TypeDeclaration inner : type.getTypes())
 			groums.addAll(buildGroums(inner, path, prefix + type.getName().getIdentifier() + "."));
 		return groums;

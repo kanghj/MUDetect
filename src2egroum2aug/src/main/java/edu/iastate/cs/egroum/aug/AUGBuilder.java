@@ -5,6 +5,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.*;
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -82,7 +83,11 @@ public class AUGBuilder {
                 addEdge(builder, edge);
             }
         }
+        
         APIUsageExample aug = builder.build();
+        
+        aug.isCtor = groum.isCtor;
+        aug.name = groum.getName();
         
         return aug;
     }
@@ -97,10 +102,22 @@ public class AUGBuilder {
 				TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
 				List interfaces = (List) typ.superInterfaceTypes();
 				for (Object interfaceObj : interfaces) {
-					SimpleType type = (SimpleType) interfaceObj;
-					System.out.println("interface = "+ type.getName().toString());
-					
-					aug.interfaces.add(type.getName().toString());
+					if (interfaceObj instanceof SimpleType) {
+						SimpleType type = (SimpleType) interfaceObj;
+						System.out.println("interface = "+ type.getName().toString());
+						
+						aug.interfaces.add(type.getName().toString());
+					} else if (interfaceObj instanceof ParameterizedType) {
+						ParameterizedType type = (ParameterizedType) interfaceObj;
+						System.out.println("interface = "+ type.getType());
+						
+						SimpleType nestedSimple = (SimpleType) type.getType();
+						
+						aug.interfaces.add(nestedSimple.getName().toString());
+						
+					} else {
+						System.out.println("unhandled type " + interfaceObj.getClass());
+					}
 				}
 			}
     	
