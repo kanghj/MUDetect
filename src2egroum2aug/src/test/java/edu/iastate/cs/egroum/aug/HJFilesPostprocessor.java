@@ -1,34 +1,23 @@
 package edu.iastate.cs.egroum.aug;
 
-import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClassFromSomewhereElse;
 import static edu.iastate.cs.egroum.aug.ExtendedAUGTypeUsageExamplePredicate.EAUGUsageExamplesOf;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 import org.junit.Test;
@@ -36,9 +25,7 @@ import org.junit.Test;
 import com.google.common.collect.Sets;
 
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
-import smu.hongjin.EnhancedAUG;
 import smu.hongjin.GraphBuildingUtils;
-import smu.hongjin.SubgraphMiningFormatter;
 
 /**
  * After mining significant subgraphs, it is likely that there are more graphs
@@ -58,14 +45,17 @@ public class HJFilesPostprocessor {
 	@Test
 	public void debug() throws IOException {
 
-		for (Entry<String, String> entry : HJPipelineGraphBuilder.directoriesToExamplesOfAPI.entrySet()) {
+		postprocess();
+	}
+
+	public void postprocess() throws IOException {
+		for (Entry<String, String> entry : HJConstants.directoriesToExamplesOfAPI.entrySet()) {
 			String API = entry.getKey();
 			String directory = entry.getValue();
 
-			Random r = new java.util.Random();
-
 			Set<String> graphIdsToRead = new HashSet<>();
-			List<String> allLines = Files.readAllLines(Paths.get("./output/" + API + "_formatted_result_interesting_unlabeled.txt"));
+			List<String> allLines = Files
+					.readAllLines(Paths.get("./output/" + API + "_formatted_result_interesting_unlabeled.txt"));
 			for (String line : allLines) {
 				graphIdsToRead.add(line);
 			}
@@ -75,11 +65,11 @@ public class HJFilesPostprocessor {
 			for (String line : allLines) {
 				String[] splitted = line.split(",");
 				String graphId = splitted[1];
-				
+
 				if (!graphIdsToRead.contains(graphId)) {
 					continue;
 				}
-				
+
 				fileIdsToRead.add(splitted[0]);
 
 				try {
@@ -90,21 +80,13 @@ public class HJFilesPostprocessor {
 				}
 			}
 
-//			allLines = Files.readAllLines(Paths.get(directory + "labels.csv"));
-//			
-//			for (String line : allLines.subList(1, toIndex)) {
-//				String[] splitted = line.split(",");
-//				String identifier = splitted[0];
-//				int number = Integer.parseInt(identifier.split(" -")[0]);
-//			}
-
 			System.out.println("Selecting");
 			try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
 				paths.filter(Files::isRegularFile).forEach(path -> {
 					if (!HJPipelineGraphBuilder.isExpectedJavaSourceFileFromRightSubdirectory(path)) {
 						return;
 					}
-					
+
 					System.out.println("path is " + path);
 
 					String after = path.toAbsolutePath().toString().substring(directory.length());
@@ -133,7 +115,7 @@ public class HJFilesPostprocessor {
 							if (cu.types().get(i) instanceof TypeDeclaration) {
 								TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
 
-								for (MethodDeclaration md : typ.getMethods()) {	
+								for (MethodDeclaration md : typ.getMethods()) {
 									if (!EAUGUsageExamplesOf(GraphBuildingUtils.APIToMethodName.get(API),
 											GraphBuildingUtils.APIToClass.get(API)).matches(md)) {
 										continue;
@@ -145,8 +127,8 @@ public class HJFilesPostprocessor {
 
 									boolean isClone = isCloneOfPrevious(filePath, md);
 
-									String sig = JavaASTUtil.buildSignature(md);
-									if (!isClone) {}
+									if (!isClone) {
+									}
 								}
 							}
 						}
@@ -160,7 +142,6 @@ public class HJFilesPostprocessor {
 						return;
 					}
 
-					
 				});
 			}
 			Optional<Integer> total = pathsAndMethodToCounts.values().stream()
@@ -168,11 +149,10 @@ public class HJFilesPostprocessor {
 			if (!total.isPresent()) {
 				throw new RuntimeException("Can't count?");
 			}
-			
 
 			for (Entry<String, Integer> labelCandidates : pathsAndMethodToCounts.entrySet()) {
 				Integer counts = labelCandidates.getValue();
-				
+
 				System.out.println("label this ->" + labelCandidates.getKey());
 				System.out.println("\tIt covers " + counts + " / " + total.get());
 			}

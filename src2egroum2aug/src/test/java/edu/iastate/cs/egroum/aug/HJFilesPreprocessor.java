@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,9 +30,7 @@ import org.junit.Test;
 import com.google.common.collect.Sets;
 
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
-import smu.hongjin.EnhancedAUG;
 import smu.hongjin.GraphBuildingUtils;
-import smu.hongjin.SubgraphMiningFormatter;
 
 /**
  * HJ: labels should be on individual methods in file
@@ -59,7 +55,7 @@ public class HJFilesPreprocessor {
 	}
 
 	public void preprocess() {
-		for (Entry<String, String> entry : HJPipelineGraphBuilder.directoriesToExamplesOfAPI.entrySet()) {
+		for (Entry<String, String> entry : HJConstants.directoriesToExamplesOfAPI.entrySet()) {
 			String API = entry.getKey();
 			String directory = entry.getValue();
 
