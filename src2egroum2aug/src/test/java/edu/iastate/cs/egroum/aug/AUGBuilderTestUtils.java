@@ -48,6 +48,13 @@ public class AUGBuilderTestUtils {
         Collection<APIUsageExample> aug = builder.build(classCode, basePath, project, null);
         return EnhancedAUG.buildEnhancedAugs(new HashSet<>(aug));
     }
+    
+    public static Collection<EnhancedAUG> buildAUGsForClassFromSomewhereElse(String classCode, String elseWhere, String project, AUGConfiguration configuration, String[] classpath) {
+        AUGBuilder builder = new AUGBuilder(configuration);
+        String basePath = elseWhere;
+        Collection<APIUsageExample> aug = builder.build(classCode, basePath, project, classpath);
+        return EnhancedAUG.buildEnhancedAugs(new HashSet<>(aug));
+    }
 
     private static Collection<APIUsageExample> buildAUGsForClass(String classCode, AUGConfiguration configuration) {
         AUGBuilder builder = new AUGBuilder(configuration);

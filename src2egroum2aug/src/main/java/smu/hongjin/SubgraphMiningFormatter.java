@@ -81,11 +81,16 @@ public class SubgraphMiningFormatter {
 	 * @param writer
 	 * @throws IOException
 	 */
-	public static void convert(Collection<EnhancedAUG> eaugs, Class<?> type ,int i, 
+	public static int convert(Collection<EnhancedAUG> eaugs, Class<?> type ,int i, 
 			Map<String, Integer> vertexLabels, Map<String, Integer> edgeLabels, 
 			String fileId,
 			Map<String, String> labels, int quantity,
-			BufferedWriter writer) throws IOException {
+			BufferedWriter writer, BufferedWriter idMappingWriter) throws IOException {
+		
+		if (edgeLabels.isEmpty()) {
+			initEdgeLabels(edgeLabels);
+		}
+		
 		// along the way,
 		// we collect the labels of vertices and edges
 		
@@ -99,10 +104,17 @@ public class SubgraphMiningFormatter {
 			// 
 			String labelId = fileId + " - " + eaug.aug.name;
 			String label = labels.get(labelId);
-			if (label == null) throw new RuntimeException("missing label!");
+			if (label == null) {
+				System.out.println("omitted due to missing label");
+				continue;
+			}
+//			if (label == null) throw new RuntimeException("missing label!");
 			
 			
 			writer.write("t " + "# " + i + " " + label + " " + quantity + "\n");
+			if (idMappingWriter != null) {
+				idMappingWriter.write(fileId + "," + i + "," + labelId + "\n");
+			}
 
 			Map<Node, Integer> vertexNumbers = new HashMap<>();
 			
@@ -139,23 +151,52 @@ public class SubgraphMiningFormatter {
 			i++;
 		}
 		
+		return i;
+	}
+
+	private static void initEdgeLabels(Map<String, Integer> edgeLabels) {
+		edgeLabels.put("throw", 0);
+		edgeLabels.put("def", 1);
+		edgeLabels.put("hdl", 2);
+		edgeLabels.put("contains", 3);
+		edgeLabels.put("recv", 4);
+		edgeLabels.put("finally", 5);
+		edgeLabels.put("sel", 6);
+		edgeLabels.put("rep", 7);
+		edgeLabels.put("sync", 8);
+		edgeLabels.put("para", 9);
+		edgeLabels.put("order", 10);
+		
+		edgeLabels.put("order_rev", 11);
 	}
 
 	private static void writeEdgesInAug(Map<String, Integer> edgeLabels, BufferedWriter writer, APIUsageGraph aug,
 			Map<Node, Integer> vertexNumbers) throws IOException {
+	
+		
 		for (Edge edge : aug.edgeSet()) {
 			String edgeLabel = new BaseAUGLabelProvider().getLabel(edge);
 			
 			if (!edgeLabels.containsKey(edgeLabel)) {
-				edgeLabels.put(edgeLabel, edgeLabels.size());	 
+				edgeLabels.put(edgeLabel, edgeLabels.size());
 			}
-			int edgeLabelIndex = edgeLabels.get(edgeLabel);
-			 
+			
+			int edgeLabelIndex = edgeLabels.get(edgeLabel);			 
 			
 			int sourceNumber = vertexNumbers.get(edge.getSource());
 			int targetNumber = vertexNumbers.get(edge.getTarget());
 			
 			writer.write("e " + sourceNumber + " " + targetNumber + " " + edgeLabelIndex+ "\n");
+			
+			
+			if (edgeLabel.equals("order")) {
+				edgeLabelIndex = edgeLabels.get("order_rev");	
+				sourceNumber = vertexNumbers.get(edge.getTarget());
+				targetNumber = vertexNumbers.get(edge.getSource());
+				
+				writer.write("e " + sourceNumber + " " + targetNumber + " " + edgeLabelIndex+ "\n");
+				
+			}
 		}
 	}
 

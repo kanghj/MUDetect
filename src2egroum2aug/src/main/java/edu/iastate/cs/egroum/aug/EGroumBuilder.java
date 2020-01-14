@@ -378,8 +378,10 @@ public class EGroumBuilder {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
 		CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(sourceCode, path, name, classpaths);
 		for (int i = 0; i < cu.types().size(); i++)
-			if (cu.types().get(i) instanceof TypeDeclaration)
+			if (cu.types().get(i) instanceof TypeDeclaration) {
+				System.out.println("buildGroums: found " + ((TypeDeclaration) cu.types().get(i)).getName());
 				groums.addAll(buildGroums((TypeDeclaration) cu.types().get(i), path, ""));
+			}
 		return groums;
 	}
 
@@ -422,14 +424,22 @@ public class EGroumBuilder {
 						dimensions += "[]";
 	
 	//					groum.join(vdf.getName(), vdf.getInitializer());
-					EGroumGraph g = buildGroum(vdf, path, prefix + type.getName().getIdentifier() + ".");
-					groums.add(g);
+					try {
+						EGroumGraph g = buildGroum(vdf, path, prefix + type.getName().getIdentifier() + ".");
+						groums.add(g);
+					} catch (Exception e) {
+						// but we can't build it for some reason, let's ignore it.
+						e.printStackTrace();
+						System.out.println("COULD NOT build field declaration groum");
+					}
 				}
 			}
 		}
 		
-		for (TypeDeclaration inner : type.getTypes())
+		for (TypeDeclaration inner : type.getTypes()) {
+			System.out.println("found inner type");
 			groums.addAll(buildGroums(inner, path, prefix + type.getName().getIdentifier() + "."));
+		}
 		return groums;
 	}
 

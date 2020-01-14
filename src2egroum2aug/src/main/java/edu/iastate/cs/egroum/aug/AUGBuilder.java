@@ -104,12 +104,12 @@ public class AUGBuilder {
 				for (Object interfaceObj : interfaces) {
 					if (interfaceObj instanceof SimpleType) {
 						SimpleType type = (SimpleType) interfaceObj;
-						System.out.println("interface = "+ type.getName().toString());
+//						System.out.println("interface = "+ type.getName().toString());
 						
 						aug.interfaces.add(type.getName().toString());
 					} else if (interfaceObj instanceof ParameterizedType) {
 						ParameterizedType type = (ParameterizedType) interfaceObj;
-						System.out.println("interface = "+ type.getType());
+//						System.out.println("interface = "+ type.getType());
 						
 						SimpleType nestedSimple = (SimpleType) type.getType();
 						

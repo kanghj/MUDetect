@@ -2,6 +2,8 @@ package edu.iastate.cs.egroum.aug;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
 import edu.iastate.cs.egroum.dot.DotGraph;
+import smu.hongjin.LiteralsUtils;
+
 import org.junit.Test;
 
 import java.io.File;
@@ -23,8 +25,8 @@ public class Debug2 {
         		"import java.util.List;\n" + 
         		"import java.util.Map;\n" + 
         		"\n" + 
-        		"public class Test {\n" + 
-        		"	public static void main() {\n" + 
+        		"public class Test implements java.util.Map {\n" + 
+        		"	public static Long main(Long ll) {\n" + 
         		"		Map<String, Integer> map = new HashMap<>();\n" + 
         		"		map.entrySet().iterator().next();\n" + 
         		"		map.entrySet().iterator().next();\n" + 
@@ -33,14 +35,16 @@ public class Debug2 {
         		"		List<String> hellos1 = new ArrayList<>();\n" + 
         		"		hellos.add(\"hihi\");\n" + 
         		"		for (int i = 0; i < hellos.size(); i++) {\n" + 
-        		"			hellos1.add(\"hihi\");\n" + 
+        		"			hellos1.add(\"hihi\" + ll);\n" + 
         		"		}\n" + 
+        		"		return ll;\n" +
         		"	}\n" + 
         		"\n" + 
         		"}\n" + 
         		"";
 
         ArrayList<APIUsageExample> augs = buildAUGsForClasses(new String[]{code, code});
+        LiteralsUtils.isTestTime=true;
         exportAUGsAsPNG(augs, "./output/", "Debug-aug");
 
         Collection<EGroumGraph> egroums = buildEGroumsForClasses(new String[] {code, code});

@@ -1,16 +1,21 @@
 package edu.iastate.cs.egroum.aug;
 
-import edu.iastate.cs.egroum.dot.DotGraph;
+import edu.iastate.cs.egroum.utils.JavaASTUtil;
 import smu.hongjin.EnhancedAUG;
+import smu.hongjin.GraphBuildingUtils;
+import smu.hongjin.LiteralsUtils;
 import smu.hongjin.SubgraphMiningFormatter;
 
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.NumberLiteral;
+import org.eclipse.jdt.core.dom.StringLiteral;
 import org.junit.Test;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,26 +24,23 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClassFromSomewhereElse;
-import static edu.iastate.cs.egroum.aug.TypeUsageExamplePredicate.usageExamplesOf;
+import static edu.iastate.cs.egroum.aug.ExtendedAUGTypeUsageExamplePredicate.EAUGUsageExamplesOf;
 
 public class HJPipelineGraphBuilder {
 
 	public static Map<String, String> directoriesToExamplesOfAPI = new HashMap<>();
-	public static Map<String, String> APIToClass = new HashMap<>();
+	
 
-	public static final String examplesRoot = "/workspace/github-code-search/src/main/java/com/project/githubsearch/";
+	public static final String examplesRoot = "/Users/kanghongjin/Downloads/github-code-search/";
 
 	static {
-		directoriesToExamplesOfAPI.put("java.io.ByteArrayOutputStream__toByteArray__0",
-				examplesRoot + "java.io.ByteArrayOutputStream__toByteArray__0/");
+//		directoriesToExamplesOfAPI.put("java.util.StringTokenizer__nextToken__0",
+//				examplesRoot + "java.util.StringTokenizer__nextToken__0/");
 
 		// These first 5 cases should be interesting
 //		"java.util.StringTokenizer__nextToken__0"  	// need to check for hasNext
@@ -47,8 +49,10 @@ public class HJPipelineGraphBuilder {
 //		"org.jfree.data.statistics.StatisticalCategoryDataset__getMeanValue__2"  // need to check null
 //      "java.io.InputStream__read__1" 				// call "close"
 //      ByteArrayOutputStream__toByteArray__0 		// many cases in the MUBench Experiment R; 
+		// java.io.ObjectOutputStream__writeObject__1 // many cases in the MUBench Experiment R;
 
-		APIToClass.put("java.io.ByteArrayOutputStream__toByteArray__0", "java.io.ByteArrayOutputStream");
+//		APIToClass.put("java.io.ByteArrayOutputStream__toByteArray__0", "java.io.ByteArrayOutputStream");
+		
 
 //		directoriesToExamplesOfAPI.put("java.util.StringTokenizer__nextToken__0",
 //				examplesRoot + "java.util.StringTokenizer__nextToken__0/");
@@ -58,10 +62,23 @@ public class HJPipelineGraphBuilder {
 //				examplesRoot + "javax.crypto.Cipher__init__2/");
 //		APIToClass.put("javax.crypto.Cipher__init__2", "javax.crypto.Cipher");
 //		
-		assert directoriesToExamplesOfAPI.size() == APIToClass.size();
+////		
+//		directoriesToExamplesOfAPI.put("java.lang.Long__parseLong__1",
+//				examplesRoot +	"java.lang.Long__parseLong__1_true/");
+//		
+		directoriesToExamplesOfAPI.put("java.io.ObjectOutputStream__writeObject__1",
+				examplesRoot + "java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/");
+//		
+//		directoriesToExamplesOfAPI.put("java.util.Map__get__1",
+//				examplesRoot + "java.util.Map__get__1_true/");
+		
+//		directoriesToExamplesOfAPI.put("java.sql.PreparedStatement__executeUpdate__0",
+//				examplesRoot + "java.sql.PreparedStatement__executeUpdate__0_true/");
+//		assert directoriesToExamplesOfAPI.size() == GraphBuildingUtils.APIToClass.size();
 	}
 
 	private int i;
+	int fileCounts = 0;
 
 	
 	boolean smallSample = false;
@@ -74,41 +91,84 @@ public class HJPipelineGraphBuilder {
 
 		System.out.println("smallSample=" + smallSample);
 		for (Entry<String, String> entry : directoriesToExamplesOfAPI.entrySet()) {
+			
+			i = 0;
+			fileCounts = 0;
+			
 			String API = entry.getKey();
 			String directory = entry.getValue();
 
 			// read the labels
 			Map<String, String> labels = new HashMap<>();
-			readLabels(directory, labels);
+			GraphBuildingUtils.readLabels(directory, labels);
 
 			// read metadata to know how many copies!
 			Map<String, Integer> quantities = new HashMap<>();
-			readCounts(directory, quantities);
+			GraphBuildingUtils.readCounts(directory, quantities);
 
 			Map<String, Integer> map1 = new HashMap<>();
 			Map<String, Integer> map2 = new HashMap<>();
+			
+			// first do an initial pass to count literals
+			try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
+				paths.filter(Files::isRegularFile).forEach(path -> {
+					if (!isExpectedJavaSourceFileFromRightSubdirectory(path)) {
+						return;
+					}
+					try {
+						String code = new String(Files.readAllBytes(path));
+						
+						
+						ArrayList<EGroumGraph> groums = new ArrayList<>();
+						String filePath = path.toFile().toString();
+						CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(code, filePath, filePath.substring(filePath.lastIndexOf("/")), null);
+						cu.accept(new ASTVisitor(false) {
+							@Override
+							public boolean preVisit2(ASTNode node) {
+								if (node.getNodeType() == ASTNode.STRING_LITERAL) {
+									StringLiteral strLiteral = (StringLiteral) node;
+									LiteralsUtils.increaseFreq(strLiteral.getLiteralValue());
+								} else if (node.getNodeType() == ASTNode.NUMBER_LITERAL) {
+									NumberLiteral numLiteral = (NumberLiteral) node;
+									LiteralsUtils.increaseFreq(numLiteral.getToken());
+								}
+						        
+								return true;
+							}
+						});
+						
+						
+						
+					} catch (IOException e) {
+						e.printStackTrace();
+						throw new RuntimeException(e);
+					} catch (NullPointerException npe) {
+						npe.printStackTrace();
+//						throw new RuntimeException(npe);
+					}
+					
+					
+				}
+				);
+			}
+			
+			System.out.println("done first pass to count literals");
+			
 			//
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter("./output/" + API + "_formatted.txt"))) {
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter("./output/" + API + "_formatted.txt"));
+					BufferedWriter idMappingWriter = new BufferedWriter(new FileWriter("./output/" + API + "_graph_id_mapping.txt" ))) {
 
 				try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
 					paths.filter(Files::isRegularFile).forEach(path -> {
-						if (path.endsWith("labels.csv") || path.endsWith("metadata.csv")
-								|| path.endsWith("metadata_locations.csv")) {
-							System.out.println("Skipping : " + path + ", which is metadata-related file");
-							return;
-						}
-						if (path.toString().contains("/files/")) {
-							System.out.println("Skipping : " + path + ", which contains /files");
-							return;
-						}
-						if (!path.toString().endsWith(".java")) {
-
-							System.out.println(
-									"Skipping : " + path + ". Unexpected file extension. We only look for java files");
+						if (!isExpectedJavaSourceFileFromRightSubdirectory(path)) {
 							return;
 						}
 
 						System.out.println("path is " + path);
+						fileCounts += 1;
+						if (fileCounts % 100 == 0) {
+							System.out.println("count is " + fileCounts);
+						}
 
 						String after = path.toAbsolutePath().toString().substring(directory.length());
 						String id = after.split("/")[0];
@@ -130,24 +190,22 @@ public class HJPipelineGraphBuilder {
 							String filePath = path.toFile().toString();
 							Collection<EnhancedAUG> eaugs = buildAUGsForClassFromSomewhereElse(code, filePath,
 									filePath.substring(filePath.lastIndexOf("/")),
-//									new AUGConfiguration()
 									new AUGConfiguration() {
 										{
-											usageExamplePredicate = usageExamplesOf(APIToClass.get(API));
+											usageExamplePredicate = EAUGUsageExamplesOf(
+													GraphBuildingUtils.APIToMethodName.get(API),
+													GraphBuildingUtils.APIToClass.get(API));
 										}
 									});
-//							System.out.println("Going to export!");
-//							exportAUGsAsPNG(augs, "./output/", "Debug-aug");
-
-							System.out.println("Done");
+							System.out.println("\tDone");
 
 							String fileId = id;
 
 							if (!smallSample) {
 								// always write if `smallSample` is false
-								SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, i, map1, map2, fileId, labels,
-										quantity, writer);
-								i += eaugs.size();
+								i = SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, i, map1, map2, fileId, labels,
+										quantity, writer, idMappingWriter);
+//								i += eaugs.size();
 							} else {
 								// otherwise, select a small number only
 								for (EnhancedAUG eaug : eaugs) {
@@ -165,14 +223,19 @@ public class HJPipelineGraphBuilder {
 
 									countsOfLabelsWritten.put(label, countsOfLabelsWritten.get(label) + 1);
 									SubgraphMiningFormatter.convert(Arrays.asList(eaug), EnhancedAUG.class, i, map1, map2, fileId, labels,
-											quantity, writer);
+											quantity, writer, idMappingWriter);
 									i += 1;
 
 								}
 
 							}
 
-						} catch (Exception e) {
+						} catch (NullPointerException npe) {
+							System.out.println("err on " + path);
+							npe.printStackTrace();
+							
+							
+						}catch (Exception e) {
 							System.out.println("err on " + path);
 							throw new RuntimeException(e);
 						}
@@ -186,7 +249,7 @@ public class HJPipelineGraphBuilder {
 					writer.write(entry1.getKey().trim() + "," + entry1.getValue() + "\n");
 				}
 			}
-			System.out.println("will write to \"./output/\" + API + \"_edgemap.txt\"");
+			System.out.println("will write to ./output/" + API + "_edgemap.txt");
 			try (BufferedWriter writer = new BufferedWriter(new FileWriter("./output/" + API + "_edgemap.txt"))) {
 				for (Entry<String, Integer> entry1 : map2.entrySet()) {
 					writer.write(entry1.getKey().trim() + "," + entry1.getValue() + "\n");
@@ -196,71 +259,25 @@ public class HJPipelineGraphBuilder {
 
 	}
 
-	private void readCounts(String directory, Map<String, Integer> quantities) {
-		List<String> lines = Collections.emptyList();
-		try {
-			lines = Files.readAllLines(Paths.get(directory + "metadata/metadata.csv"), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			System.out.println("Couldn't read labels");
-			e.printStackTrace();
-			throw new RuntimeException(e);
+
+
+	public static boolean isExpectedJavaSourceFileFromRightSubdirectory(Path path) {
+		if (path.endsWith("labels.csv") || path.endsWith("metadata.csv")
+				|| path.endsWith("metadata_locations.csv")) {
+			System.out.println("Skipping : " + path + ", which is metadata-related file");
+			return false;
 		}
-
-		for (String line : lines) {
-			String[] splitted = line.split(",");
-			String id = splitted[0];
-			int quantity = Integer.parseInt(splitted[1]);
-
-			quantities.put(id, quantity);
+		if (path.toString().contains("/files/")) {
+			System.out.println("Skipping : " + path + ", which contains /files");
+			return false;
 		}
-	}
+		if (!path.toString().endsWith(".java.txt")) {
 
-	private void readLabels(String directory, Map<String, String> labels) {
-		List<String> lines = Collections.emptyList();
-		try {
-			lines = Files.readAllLines(Paths.get(directory + "labels.csv"), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			System.out.println("Couldn't read labels");
-			e.printStackTrace();
-			throw new RuntimeException(e);
+			System.out.println(
+					"Skipping : " + path + ". Unexpected file extension. We only look for java.txt files");
+			return false;
 		}
-
-		int i = 0;
-		for (String line : lines) {
-			if (i == 0) {
-				i += 1;
-				continue;
-			}
-			String[] splitted = line.split(",");
-			String location = splitted[0];
-			String label;
-			if (splitted.length < 2) {
-				label = "U";
-			} else {
-				label = splitted[1];
-			}
-
-			i += 1;
-			labels.put(location, label);
-		}
+		return true;
 	}
-
-	private Collection<EGroumGraph> buildEGroumsForClasses(String[] sources) {
-		return Arrays.stream(sources).flatMap(source -> buildEGroumsForClass(source).stream())
-				.collect(Collectors.toList());
-	}
-
-	private ArrayList<EGroumGraph> buildEGroumsForClass(String source) {
-		String projectName = "test";
-		String basePath = AUGBuilderTestUtils.class.getResource("/").getFile() + projectName;
-		return new EGroumBuilder(new AUGConfiguration()).buildGroums(source, basePath, projectName, null);
-	}
-
-	private void exportEGroumsAsPNG(Collection<EGroumGraph> egroums, String pathname, String name) {
-		Iterator<EGroumGraph> it = egroums.iterator();
-		for (int i = 0; it.hasNext(); i++) {
-			EGroumGraph egroum = it.next();
-			new DotGraph(egroum).toPNG(new File(pathname), name + "-" + i);
-		}
-	}
+	
 }

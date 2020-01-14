@@ -79,6 +79,12 @@ public class AUGConfiguration {
      */
     public int minStatements = 0;
     
+    
+    /**
+     * HJ:  threshold for max number of stmts. If too big, we run out of memory during processing afterwards.
+     */
+    public int maxStatements = 200;
+    
     /**
      * 
      */

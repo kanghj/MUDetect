@@ -1,8 +1,11 @@
 package edu.iastate.cs.egroum.aug;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
+import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import edu.iastate.cs.egroum.dot.DotGraph;
 import smu.hongjin.EnhancedAUG;
+import smu.hongjin.GraphBuildingUtils;
+import smu.hongjin.LiteralsUtils;
 import smu.hongjin.SubgraphMiningFormatter;
 
 import org.junit.Test;
@@ -13,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,15 +31,31 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import static de.tu_darmstadt.stg.mudetect.aug.AUGTestUtils.exportAUGsAsPNG;
+import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClassFromSomewhereElse;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClasses;
+import static edu.iastate.cs.egroum.aug.ExtendedAUGTypeUsageExamplePredicate.EAUGUsageExamplesOf;
 
 public class Debug {
     @Test
     public void debug() throws IOException {
-        String code = new String(Files.readAllBytes(
-        		Paths.get("/Users/kanghongjin/Downloads/github-code-search/java.io.ByteArrayOutputStream__toByteArray__0/755/com/ftkj/util/ByteUtil.java")));
+//        String code = new String(Files.readAllBytes(
+//        		Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/jackrabbit/1678/checkout/jackrabbit-jcr-server/src/main/java/org/apache/jackrabbit/webdav/jcr/JcrDavException.java")));
 
-        ArrayList<APIUsageExample> augs = buildAUGsForClasses(new String[]{code});
+        String code = new String(Files.readAllBytes(
+        		path()));
+
+        LiteralsUtils.isTestTime=true;
+        Collection<EnhancedAUG> eaugs = buildAUGsForClassFromSomewhereElse(code, path().toString(),
+        		path().toString().substring(path().toString().lastIndexOf("/")),
+				new AUGConfiguration() {
+					{
+						usageExamplePredicate = EAUGUsageExamplesOf(
+								"parseLong",
+								"java.lang.Long");
+					}
+				});
+        
+        List<APIUsageGraph> augs = eaugs.stream().map(eaug -> eaug.aug).collect(Collectors.toList());
         exportAUGsAsPNG(augs, "./output/", "Debug-aug");
         
         Set<EnhancedAUG> enhanced = EnhancedAUG.buildEnhancedAugs(new HashSet<>(augs));
@@ -60,9 +80,14 @@ public class Debug {
 //		}
 		
 
-        Collection<EGroumGraph> egroums = buildEGroumsForClasses(new String[] {code});
-        exportEGroumsAsPNG(egroums, "./output", "Debug-egroum");
+//        Collection<EGroumGraph> egroums = buildEGroumsForClasses(new String[] {code});
+//        exportEGroumsAsPNG(egroums, "./output", "Debug-egroum");
     }
+
+	private Path path() {
+//		return Paths.get("/Users/kanghongjin//Downloads/github-code-search/java.util.Map__get__1_true/files/10225.UnmodifiableCaseInsensitiveDictionaryMap.java");
+		return Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/asterisk-java/41461b4/checkout/src/main/java/org/asteriskjava/manager/event/RtcpReceivedEvent.java");
+	}
 
     private Collection<EGroumGraph> buildEGroumsForClasses(String[] sources) {
         return Arrays.stream(sources)

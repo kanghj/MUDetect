@@ -43,6 +43,11 @@ public class EGroumGraph implements Serializable {
 
 		if (isTooSmall(md))
 			return;
+		if (isTooBig(md)) {
+			System.out.println("EARLY return: method too large");
+			return;
+		}
+		
 		context.addScope();
 
 //		ASTNode parent = md.getParent();
@@ -63,7 +68,7 @@ public class EGroumGraph implements Serializable {
 		thisNode.defStore.put(thisNode.key, thisDef);
 		for (int i = 0; i < md.parameters().size(); i++) {
 			SingleVariableDeclaration d = (SingleVariableDeclaration) md.parameters().get(i);
-			EGroumGraph pg = buildPDG(entryNode, "", d);
+			EGroumGraph pg = buildPDG(entryNode, "", d, true);
 			this.nodes.addAll(pg.nodes);
 			entryNode.consumeDefStore(pg);
 		}
@@ -306,6 +311,19 @@ public class EGroumGraph implements Serializable {
 			}
 		});
 		return count < configuration.minStatements;
+	}
+	
+	boolean isTooBig(MethodDeclaration md) {
+		md.accept(new ASTVisitor(false) {
+			@Override
+			public boolean preVisit2(ASTNode node) {
+				if (node instanceof Statement) {
+					count++;
+				}
+				return true;
+			}
+		});
+		return count > configuration.maxStatements;
 	}
 
 	private void collapseIsomorphicSubgraphs() {
@@ -858,6 +876,19 @@ public class EGroumGraph implements Serializable {
 	private EGroumGraph buildPDG(EGroumNode control, String branch, SingleVariableDeclaration astNode) {
 		SimpleName name = astNode.getName();
 		String type = JavaASTUtil.getSimpleType(astNode.getType());
+		for (int i = 0; i < astNode.getExtraDimensions(); i++)
+			type += "[]";
+		context.addLocalVariable(name.getIdentifier(), "" + name.getStartPosition(), type);
+		EGroumDataNode node = new EGroumDataNode(name, name.getNodeType(), "" + name.getStartPosition(), type,
+				name.getIdentifier(), false, true);
+		EGroumGraph pdg = new EGroumGraph(context, configuration);
+		pdg.mergeSequentialData(node, DEFINITION);
+		return pdg;
+	}
+	
+	private EGroumGraph buildPDG(EGroumNode control, String branch, SingleVariableDeclaration astNode, boolean isMethodParam) {
+		SimpleName name = astNode.getName();
+		String type = isMethodParam ? "param:" + JavaASTUtil.getSimpleType(astNode.getType()) : JavaASTUtil.getSimpleType(astNode.getType());
 		for (int i = 0; i < astNode.getExtraDimensions(); i++)
 			type += "[]";
 		context.addLocalVariable(name.getIdentifier(), "" + name.getStartPosition(), type);
