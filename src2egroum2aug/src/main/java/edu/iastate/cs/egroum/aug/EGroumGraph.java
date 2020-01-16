@@ -119,14 +119,14 @@ public class EGroumGraph implements Serializable {
 
 	}
 	
-	public EGroumGraph(Expression md, EGroumBuildingContext context, AUGConfiguration configuration) {
+	public EGroumGraph(VariableDeclarationFragment vdf, EGroumBuildingContext context, AUGConfiguration configuration) {
 		this(context, configuration);
 
 
 		context.addScope();
 
 //		context.setMethod(md);
-		entryNode = new EGroumEntryNode(md, ASTNode.FIELD_DECLARATION, "START");
+		entryNode = new EGroumEntryNode(vdf, ASTNode.FIELD_DECLARATION, "START");
 		nodes.add(entryNode);
 		statementNodes.add(entryNode);
 		sinks.add(entryNode);
@@ -143,7 +143,7 @@ public class EGroumGraph implements Serializable {
 		
 		
 		
-		EGroumGraph pdg = buildPDG(entryNode, "", md);
+		EGroumGraph pdg = buildPDG(entryNode, "", vdf);
 		addDefinitions(pdg);
 		mergeSequential(pdg);
 	
@@ -169,9 +169,9 @@ public class EGroumGraph implements Serializable {
 		deleteAssignmentNodes();
 		if (configuration.removeTransitiveDefinitionEdgesFromMethodCalls)
 			deleteTransitiveDefinitionEdgesFromMethodCalls();
-		deleteUnreachableNodes();
+//		deleteUnreachableNodes();
 		deleteControlNodes();
-		deleteUnusedDataNodes();
+//		deleteUnusedDataNodes();
 		if (configuration.removeIndependentControlEdges)
 			deleteIndependentControlEdges();
 		if (configuration.groum) {

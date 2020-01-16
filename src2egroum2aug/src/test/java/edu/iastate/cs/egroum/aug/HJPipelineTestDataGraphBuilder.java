@@ -30,11 +30,11 @@ public class HJPipelineTestDataGraphBuilder {
 	@Test
 	public void debug() throws IOException {
 
-		String API = "java.io.ObjectOutputStream__writeObject__1";
+//		String API = "java.io.ObjectOutputStream__writeObject__1";
 //		String API = "java.lang.Long__parseLong__1";
 //		String API = "java.util.Map__get__1";
 //		String API = "java.sql.PreparedStatement__executeUpdate__0";
-	
+		String API = "java.util.StringTokenizer__nextToken__0";
 
 		List<String> pathsToJavaFiles = HJRegressionTestConstants.javaFilesForApi.get(API);
 		List<String> pathsToClassPath = HJRegressionTestConstants.javaClassPathForApi.get(API);
@@ -50,7 +50,7 @@ public class HJPipelineTestDataGraphBuilder {
 //				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/chensun/cf23b99/checkout/CS5430/src//database/SocialNetworkDatabaseBoards.java"
 //				);
 
-		String directoryToLabels = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/";
+		String directoryToLabels = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + API + "/";
 		
 		System.out.println("writing graph IDS to ");
 		System.out.println(directoryToLabels + API +"_test_graph_id_mapping.txt");

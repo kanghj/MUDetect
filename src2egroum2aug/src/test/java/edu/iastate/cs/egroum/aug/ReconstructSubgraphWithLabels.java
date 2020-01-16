@@ -24,18 +24,35 @@ import org.junit.Test;
  *
  */
 public class ReconstructSubgraphWithLabels {
-//	@Test
-//	public void debug() throws IOException {
-//		for (Entry<String, String> entry : HJPipelineGraphBuilder.directoriesToExamplesOfAPI.entrySet()) {
-//			String clazz = HJPipelineGraphBuilder.APIToClass.get(entry.getKey());
-//			String API = entry.getKey();
-//
-//			convert(API, "./output/" + API + "_vertmap.txt", "./output/" + API + "_edgemap.txt",
-//					"./output/" + API + "_formatted.txt_result");
-//		}
-//
-//	}
 
+	private Path guessPathToBestSubgraphFile(String API) {
+		String baseDir = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + API +"/";
+		String fileName = API + "_formatted_result_best_subgraphs.txt";
+		
+		return Paths.get(baseDir + fileName);
+	}
+	
+	private String pathToVertMapFile(String API) {
+		String baseDir = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + API +"/";
+		String fileName = API + "_vertmap.txt";
+		
+		return baseDir + fileName;
+	}
+	
+	private String pathToEdgeMapFile(String API) {
+		String baseDir = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + API +"/";
+		String fileName = API + "_edgemap.txt";
+		
+		return baseDir + fileName;
+	}
+	
+	private String pathToFrequentSubgraphFile(String API) {
+		String baseDir = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + API +"/";
+		String fileName = API + "_formatted_result";
+		
+		return baseDir + fileName;
+	}
+	
 	/**
 	 * For testing the ability to reconstruct the best subgraphs 
 	 * @throws IOException
@@ -46,9 +63,13 @@ public class ReconstructSubgraphWithLabels {
 		Map<Integer, Float> bestSubgraphs = new HashMap<>();
 //		Path path = Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1_formatted_result_best_subgraphs.txt");
 //		Path path = Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.lang.Long__parseLong__1_formatted_result_best_subgraphs.txt");
-		
-		Path path = Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_formatted_result_best_subgraphs.txt");
+//		Path path = Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_formatted_result_best_subgraphs.txt");
+//		Path path = Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_formatted_result_best_subgraphs.txt");
 //		Files.lines(Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ByteArrayOutputStream__toByteArray__0_formatted.txt_result_best_subgraphs.txt")).map(s -> s.trim())
+		
+		String APIunderTest = "javax.crypto.Cipher__init__2";
+		Path path = guessPathToBestSubgraphFile(APIunderTest);
+		
 		Files.lines(path).map(s -> s.trim())
 //		Files.lines(Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.sql.PreparedStatement__executeUpdate__0_formatted_result_best_subgraphs.txt")).map(s -> s.trim())
 				.filter(s -> !s.isEmpty()).forEach(line -> {
@@ -61,17 +82,32 @@ public class ReconstructSubgraphWithLabels {
 		   .map(Entry::getKey)
 		   .collect(Collectors.toList());
 
+		convert(pathToVertMapFile(APIunderTest),
+				pathToEdgeMapFile(APIunderTest),
+				pathToFrequentSubgraphFile(APIunderTest),
+				sorted);
+		
 //		System.out.println(sorted);
 //		convert("ByteOutputStream",
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ByteArrayOutputStream__toByteArray__0_vertmap.txt",
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ByteArrayOutputStream__toByteArray__0_edgemap.txt",
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ByteArrayOutputStream__toByteArray__0_formatted.txt_result",
 //				bestSubgraphs);
-		convert("ObjectOutputStream",
-						"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_vertmap.txt",
-						"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_edgemap.txt",
-						"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_formatted_result",
-						sorted);
+//		convert("ObjectOutputStream",
+//						"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_vertmap.txt",
+//						"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_edgemap.txt",
+//						"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_formatted_result",
+//						sorted);
+//		convert(
+//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_vertmap.txt",
+//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_edgemap.txt",
+//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_formatted_result",
+//				sorted);
+		
+		convert(pathToVertMapFile(APIunderTest),
+				pathToEdgeMapFile(APIunderTest),
+				pathToFrequentSubgraphFile(APIunderTest),
+				sorted);
 //		convert("Long",
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.lang.Long__parseLong__1_vertmap.txt",
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.lang.Long__parseLong__1_edgemap.txt",
@@ -90,20 +126,25 @@ public class ReconstructSubgraphWithLabels {
 
 	}
 
-	private void convert(String API, String vertmapPath, String edgeMapPath, String graphPath)
-			throws IOException, FileNotFoundException {
-		convert(API, vertmapPath, edgeMapPath, graphPath, Collections.emptyList());
-	}
 
-	private void convert(String API, String vertmapPath, String edgeMapPath, String graphPath, List<Integer> onlyShow)
+
+	private void convert(String vertmapPath, String edgeMapPath, String graphPath, List<Integer> onlyShow)
 			throws IOException, FileNotFoundException {
 		Map<Integer, String> vertexMap = new HashMap<>();
+		int line = 0;
 		try (BufferedReader reader = new BufferedReader(new FileReader(vertmapPath))) {
 			String st;
 			while ((st = reader.readLine()) != null) {
 				int splitAt = st.lastIndexOf(",");
 
-				vertexMap.put(Integer.parseInt(st.substring(splitAt + 1)), st.substring(0, splitAt ));
+				try {
+					vertexMap.put(Integer.parseInt(st.substring(splitAt + 1)), st.substring(0, splitAt ));
+				} catch (NumberFormatException nfe) {
+					System.out.println("weird input format. string=" + st + " at line " + line);
+					throw new RuntimeException(nfe);
+					
+				}
+				line++;
 			}
 		}
 

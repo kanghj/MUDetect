@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.StringLiteral;
 import org.junit.Test;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,6 +43,7 @@ public class HJPipelineGraphBuilder {
 
 	private void buildGraphs() throws IOException {
 		for (Entry<String, String> entry : HJConstants.directoriesToExamplesOfAPI.entrySet()) {
+			System.out.println("running " + entry);
 
 			i = 0;
 			fileCounts = 0;
@@ -77,7 +79,7 @@ public class HJPipelineGraphBuilder {
 							public boolean preVisit2(ASTNode node) {
 								if (node.getNodeType() == ASTNode.STRING_LITERAL) {
 									StringLiteral strLiteral = (StringLiteral) node;
-									LiteralsUtils.increaseFreq(strLiteral.getLiteralValue());
+									LiteralsUtils.increaseFreq(strLiteral.getLiteralValue().replaceAll("\n", " "));
 								} else if (node.getNodeType() == ASTNode.NUMBER_LITERAL) {
 									NumberLiteral numLiteral = (NumberLiteral) node;
 									LiteralsUtils.increaseFreq(numLiteral.getToken());
@@ -99,9 +101,11 @@ public class HJPipelineGraphBuilder {
 
 			System.out.println("done first pass to count literals");
 
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter("./output/" + API + "_formatted.txt"));
+			String APIDirectory =  "./output/" + API + "/";
+			new File(APIDirectory).mkdirs();
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(APIDirectory + API + "_formatted.txt"));
 					BufferedWriter idMappingWriter = new BufferedWriter(
-							new FileWriter("./output/" + API + "_graph_id_mapping.txt"))) {
+							new FileWriter(APIDirectory + API + "_graph_id_mapping.txt"))) {
 
 				try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
 					paths.filter(Files::isRegularFile).forEach(path -> {
@@ -145,8 +149,12 @@ public class HJPipelineGraphBuilder {
 
 							String fileId = id;
 
+							int oldI = i;
 							i = SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, i, map1, map2, fileId, labels,
 									quantity, writer, idMappingWriter);
+//							if (i == oldI) {
+//								throw new RuntimeException("'i' should be increased i=" + i);
+//							}
 
 						} catch (NullPointerException npe) {
 							System.out.println("err on " + path);
@@ -159,15 +167,15 @@ public class HJPipelineGraphBuilder {
 					});
 				}
 			}
-			System.out.println("will write to  " + " ./output/" + API + "_formatted.txt");
-			System.out.println("will write to  " + " ./output/" + API + "_vertmap.txt");
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter("./output/" + API + "_vertmap.txt"))) {
+			System.out.println("will write to  " + APIDirectory + API + "_formatted.txt");
+			System.out.println("will write to  " + APIDirectory + API + "_vertmap.txt");
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(APIDirectory + API + "_vertmap.txt"))) {
 				for (Entry<String, Integer> entry1 : map1.entrySet()) {
 					writer.write(entry1.getKey().trim() + "," + entry1.getValue() + "\n");
 				}
 			}
-			System.out.println("will write to ./output/" + API + "_edgemap.txt");
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter("./output/" + API + "_edgemap.txt"))) {
+			System.out.println("will write to " + APIDirectory + API + "_edgemap.txt");
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(APIDirectory + API + "_edgemap.txt"))) {
 				for (Entry<String, Integer> entry1 : map2.entrySet()) {
 					writer.write(entry1.getKey().trim() + "," + entry1.getValue() + "\n");
 				}

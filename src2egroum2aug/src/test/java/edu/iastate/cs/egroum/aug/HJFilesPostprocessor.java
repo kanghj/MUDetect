@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,7 +41,8 @@ import smu.hongjin.GraphBuildingUtils;
 public class HJFilesPostprocessor {
 
 	Map<String, Set<String>> pathsAndMethodToTokens = new HashMap<>();
-	Map<String, Integer> pathsAndMethodToCounts = new HashMap<>();
+	Map<String, Integer> pathsAndMethodToCounts = new LinkedHashMap<>();
+	Map<String, List<Integer>> pathsAndMethodToGraphIds = new LinkedHashMap<>();
 
 	@Test
 	public void debug() throws IOException {
@@ -53,15 +55,17 @@ public class HJFilesPostprocessor {
 			String API = entry.getKey();
 			String directory = entry.getValue();
 
-			Set<String> graphIdsToRead = new HashSet<>();
+			List<String> graphIdsToRead = new ArrayList<>();
 			List<String> allLines = Files
-					.readAllLines(Paths.get("./output/" + API + "_formatted_result_interesting_unlabeled.txt"));
+					.readAllLines(Paths.get("./output/" + API + "/" + API + "_formatted_result_interesting_unlabeled.txt"));
 			for (String line : allLines) {
 				graphIdsToRead.add(line);
 			}
 
 			Set<String> fileIdsToRead = new HashSet<>();
-			allLines = Files.readAllLines(Paths.get("./output/" + API + "_graph_id_mapping.txt"));
+			allLines = Files.readAllLines(Paths.get("./output/" + API + "/" + API + "_graph_id_mapping.txt"));
+			
+			Map<Integer, List<Integer>> fileIdToGraphIds = new HashMap<>();
 			for (String line : allLines) {
 				String[] splitted = line.split(",");
 				String graphId = splitted[1];
@@ -72,12 +76,17 @@ public class HJFilesPostprocessor {
 
 				fileIdsToRead.add(splitted[0]);
 
+				int fileId;
 				try {
 					// throw early if id is not integer, which it should be
-					Integer.parseInt(splitted[0]);
+					fileId = Integer.parseInt(splitted[0]);
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
+				
+				fileIdToGraphIds.putIfAbsent(fileId, new ArrayList<>());				
+				fileIdToGraphIds.get(fileId).add(Integer.parseInt(graphId));
+
 			}
 
 			System.out.println("Selecting");
@@ -125,7 +134,8 @@ public class HJFilesPostprocessor {
 										continue;
 									}
 
-									boolean isClone = isCloneOfPrevious(filePath, md);
+									boolean isClone = checkCloneOfPreviousAndDoStuff(
+											filePath, md, fileIdToGraphIds.get(Integer.parseInt(id)));
 
 									if (!isClone) {
 									}
@@ -155,12 +165,13 @@ public class HJFilesPostprocessor {
 
 				System.out.println("label this ->" + labelCandidates.getKey());
 				System.out.println("\tIt covers " + counts + " / " + total.get());
+				System.out.println("\t graph id might be ->" + pathsAndMethodToGraphIds.get(labelCandidates.getKey()));
 			}
 
 		}
 	}
 
-	private boolean isCloneOfPrevious(String path, MethodDeclaration md) {
+	private boolean checkCloneOfPreviousAndDoStuff(String path, MethodDeclaration md,  List<Integer> graphIds) {
 
 		Set<String> tokens = new HashSet<>();
 
@@ -186,6 +197,7 @@ public class HJFilesPostprocessor {
 		} else {
 			pathsAndMethodToCounts.put(path + "::" + md.getName(), 1);
 			pathsAndMethodToTokens.put(path + "::" + md.getName(), tokens);
+			pathsAndMethodToGraphIds.put(path + "::" + md.getName(), graphIds);
 			return false;
 		}
 	}

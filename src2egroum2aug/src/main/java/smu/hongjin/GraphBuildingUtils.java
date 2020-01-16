@@ -33,6 +33,7 @@ public class GraphBuildingUtils {
 	static {
 		APIToClass.put("java.lang.Long__parseLong__1", "java.lang.Long");
 		APIToMethodName.put("java.lang.Long__parseLong__1", "parseLong");
+		
 		APIToClass.put("java.io.ObjectOutputStream__writeObject__1", "java.io.ObjectOutputStream");
 		APIToMethodName.put("java.io.ObjectOutputStream__writeObject__1", "writeObject");
 		
@@ -44,6 +45,13 @@ public class GraphBuildingUtils {
 		
 		APIToClass.put("java.sql.PreparedStatement__executeUpdate__0", "java.sql.PreparedStatement");
 		APIToMethodName.put("java.sql.PreparedStatement__executeUpdate__0", "executeUpdate");
+		
+		
+		APIToClass.put("java.util.StringTokenizer__nextToken__0", "java.util.StringTokenizer");
+		APIToMethodName.put("java.util.StringTokenizer__nextToken__0", "nextToken");
+		
+		APIToClass.put("javax.crypto.Cipher__init__2", "javax.crypto.Cipher");
+		APIToMethodName.put("javax.crypto.Cipher__init__2", "init");
 	}
 	
 

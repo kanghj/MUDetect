@@ -53,7 +53,12 @@ public class HJRegressionTestConstants {
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jriecken-gae-java-mini-profiler/80f3a59/checkout/src/main/java/com/google/appengine/tools/appstats/MiniProfilerAppstats.java",
 				
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/ivantrendafilov-confucius/2c30287/checkout/src/main/java/org/trendafilov/confucius/core/AbstractConfiguration.java",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/asterisk-java/41461b4/checkout/src/main/java/org/asteriskjava/manager/event/RtcpReceivedEvent.java"
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/asterisk-java/41461b4/checkout/src/main/java/org/asteriskjava/manager/event/RtcpReceivedEvent.java",
+				
+				"/Users/kanghongjin/Downloads/github-code-search/java.lang.Long__parseLong__1_true/502/org/stempeluhr/util/Parser.java.txt",
+				"/Users/kanghongjin/Downloads/github-code-search/java.lang.Long__parseLong__1_true/470/com/bin/brother/integerLong/Test1.java.txt",
+				"/Users/kanghongjin/Downloads/github-code-search/java.lang.Long__parseLong__1_true/1841/org/motechproject/nms/reportfix/kilkari/helpers/Parser.java.txt"
+				
 				);
 		pathsToClassPath = Arrays.asList(
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/hoverruan-weiboclient4j/6ca0c73/dependencies",
@@ -62,6 +67,10 @@ public class HJRegressionTestConstants {
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/hoverruan-weiboclient4j/6ca0c73/dependencies",
 				null,
 				null,
+				null,
+				null,
+				null,
+				
 				null,
 				null,
 				null
@@ -102,6 +111,52 @@ public class HJRegressionTestConstants {
 		javaClassPathForApi.put("java.util.Map__get__1", pathsToClassPath);
 		
 		
+		pathsToJavaFiles = Arrays.asList(
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/main/java/org/joda/time/tz/ZoneInfoCompiler.java"
+				,
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/itext/5091/checkout/itext/src/main/java/com/itextpdf/text/pdf/SimpleBookmark.java",
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/itext/5091/checkout/itext/src/main/java/com/itextpdf/text/pdf/CJKFont.java",
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/itext/5091/checkout/itext/src/main/java/com/itextpdf/text/html/WebColors.java",
+				
+				"/Users/kanghongjin/Downloads/github-code-search/java.util.StringTokenizer__nextToken__0_true/939/com/practice/string/Op5_StringTokenizerTest.java.txt",
+				"/Users/kanghongjin/Downloads/github-code-search/java.util.StringTokenizer__nextToken__0_true/1068/Hunter/H_92.java.txt",
+				"/Users/kanghongjin/Downloads/github-code-search/java.util.StringTokenizer__nextToken__0_true/1209/TokenPrueba2/TokenPrueba2.java.txt"
+				);
+		pathsToClassPath = Arrays.asList(
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/itext/5091/dependencies",
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/itext/5091/dependencies",
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/itext/5091/dependencies",
+				null,
+				null,
+				null
+			
+				);
+		
+		javaFilesForApi.put("java.util.StringTokenizer__nextToken__0", pathsToJavaFiles);
+		javaClassPathForApi.put("java.util.StringTokenizer__nextToken__0", pathsToClassPath);
+		
+		pathsToJavaFiles = Arrays.asList(
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/corona-old/0d0d18b/checkout/src/com/corona/crypto/DESCypher.java"
+				,
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/corona-old/0d0d18b/checkout/src/com/corona/crypto/AESCypher.java"
+				
+				);
+		pathsToClassPath = Arrays.asList(
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/corona-old/0d0d18b/dependencies",
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/corona-old/0d0d18b/dependencies"
+				
+				
+			
+				);
+		
+		javaFilesForApi.put("javax.crypto.Cipher__init__2", pathsToJavaFiles);
+		javaClassPathForApi.put("javax.crypto.Cipher__init__2", pathsToClassPath);
+		
+		
+		
 	}
+	
+	
 	
 }

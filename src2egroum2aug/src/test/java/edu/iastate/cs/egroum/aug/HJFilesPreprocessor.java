@@ -42,7 +42,7 @@ import smu.hongjin.GraphBuildingUtils;
  */
 public class HJFilesPreprocessor {
 
-	int percentageToLabel = 2;
+	int percentageToLabel = 1;
 
 	int percentageToPartitionToTest = 1;
 
@@ -58,6 +58,10 @@ public class HJFilesPreprocessor {
 		for (Entry<String, String> entry : HJConstants.directoriesToExamplesOfAPI.entrySet()) {
 			String API = entry.getKey();
 			String directory = entry.getValue();
+			
+			if (!directory.endsWith("/")) {
+				throw new RuntimeException("Directories should end with '/'");
+			}
 
 			Random r = new java.util.Random();
 
@@ -120,6 +124,11 @@ public class HJFilesPreprocessor {
 									TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
 
 									for (MethodDeclaration md : typ.getMethods()) {
+										if (!GraphBuildingUtils.APIToMethodName.containsKey(API) || 
+												!GraphBuildingUtils.APIToClass.containsKey(API)
+												) {
+											throw new RuntimeException("GraphBuildingUtils does not have the necessary information");
+										}
 										if (!EAUGUsageExamplesOf(GraphBuildingUtils.APIToMethodName.get(API),
 												GraphBuildingUtils.APIToClass.get(API)).matches(md)) {
 //											System.out.println("\tno match " + md.getName());

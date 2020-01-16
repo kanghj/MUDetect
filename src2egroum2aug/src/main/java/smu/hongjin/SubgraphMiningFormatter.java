@@ -119,10 +119,10 @@ public class SubgraphMiningFormatter {
 			Map<Node, Integer> vertexNumbers = new HashMap<>();
 			
 			int nodeNumber = 0;
-			writeNodesInAug(vertexLabels, writer, aug, vertexNumbers, nodeNumber);
+			nodeNumber = writeNodesInAug(vertexLabels, writer, aug, vertexNumbers, nodeNumber);
 			
 			for (APIUsageGraph relAug : eaug.related) {
-				writeNodesInAug(vertexLabels, writer, relAug, vertexNumbers, nodeNumber);				
+				nodeNumber = writeNodesInAug(vertexLabels, writer, relAug, vertexNumbers, nodeNumber);				
 			}
 			// write nodes for the interface
 			for (String interfaceObj : eaug.interfaces) {
@@ -200,7 +200,7 @@ public class SubgraphMiningFormatter {
 		}
 	}
 
-	private static void writeNodesInAug(Map<String, Integer> vertexLabels, BufferedWriter writer, APIUsageGraph aug,
+	private static int writeNodesInAug(Map<String, Integer> vertexLabels, BufferedWriter writer, APIUsageGraph aug,
 			Map<Node, Integer> vertexNumbers, int nodeNumber) throws IOException {
 		for (Node vertex : aug.vertexSet()) {
 			 String nodeLabel = new BaseAUGLabelProvider().getLabel(vertex);
@@ -217,6 +217,8 @@ public class SubgraphMiningFormatter {
 			 
 			 nodeNumber+=1;
 		}
+		
+		return nodeNumber;
 	}
 	
 }

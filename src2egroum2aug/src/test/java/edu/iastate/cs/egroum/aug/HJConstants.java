@@ -1,6 +1,8 @@
 package edu.iastate.cs.egroum.aug;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HJConstants {
@@ -8,6 +10,8 @@ public static Map<String, String> directoriesToExamplesOfAPI = new HashMap<>();
 	
 
 	public static final String examplesRoot = "/Users/kanghongjin/Downloads/github-code-search/";
+	
+	public static List<String> APIUnderMiner = Arrays.asList("java.util.StringTokenizer__nextToken__0");
 
 	static {
 //		directoriesToExamplesOfAPI.put("java.util.StringTokenizer__nextToken__0",
@@ -37,8 +41,14 @@ public static Map<String, String> directoriesToExamplesOfAPI = new HashMap<>();
 //		directoriesToExamplesOfAPI.put("java.lang.Long__parseLong__1",
 //				examplesRoot +	"java.lang.Long__parseLong__1_true/");
 //		
-		directoriesToExamplesOfAPI.put("java.io.ObjectOutputStream__writeObject__1",
-				examplesRoot + "java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/");
+//		directoriesToExamplesOfAPI.put("java.io.ObjectOutputStream__writeObject__1",
+//				examplesRoot + "java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/");
+//		directoriesToExamplesOfAPI.put("java.util.StringTokenizer__nextToken__0",
+//				examplesRoot + "java.util.StringTokenizer__nextToken__0_true/");
+		
+		directoriesToExamplesOfAPI.put("javax.crypto.Cipher__init__2",
+				examplesRoot + "javax.crypto.Cipher__init__2_true/");
+		
 //		
 //		directoriesToExamplesOfAPI.put("java.util.Map__get__1",
 //				examplesRoot + "java.util.Map__get__1_true/");

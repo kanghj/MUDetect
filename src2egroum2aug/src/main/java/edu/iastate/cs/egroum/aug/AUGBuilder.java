@@ -192,6 +192,15 @@ public class AUGBuilder {
         }
         throw new IllegalArgumentException("unsupported edge: " + edge.getLabel());
     }
+    
+    private static boolean hasNoLowerCase(String s) {
+        for (int i=0; i<s.length(); i++) {
+            if (Character.isLowerCase(s.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     private void addNode(APIUsageExampleBuilder builder, EGroumNode node) {
         String nodeId = getNodeId(node);
@@ -216,7 +225,12 @@ public class AUGBuilder {
                 return;
             } else if (node.astNodeType == ASTNode.FIELD_ACCESS) {
             	// HJ TODO: not all field accesses are constants!
-                builder.withConstant(nodeId, dataType, dataName, dataValue);
+            	// HJ: maybe heuristically use capital letter naming
+            	if (hasNoLowerCase(dataName)) {
+            		builder.withConstant(nodeId, dataType, dataName, dataValue);
+            	} else {
+            		builder.withVariable(nodeId, dataType, dataName);
+            	}
                 
                 builder.fieldsUsed.add(dataName);
                 // HJ: cache for easy lookup

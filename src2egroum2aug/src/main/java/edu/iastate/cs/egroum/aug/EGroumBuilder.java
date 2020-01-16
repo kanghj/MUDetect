@@ -415,6 +415,7 @@ public class EGroumBuilder {
 			}
 
 		if (typeMatches) {	// we want all the fields
+			System.out.println("Groum 4 field");
 			for (FieldDeclaration f : type.getFields()) {
 				for (int i = 0; i < f.fragments().size(); i++) {
 					VariableDeclarationFragment vdf = (VariableDeclarationFragment) f.fragments().get(i);
@@ -456,7 +457,8 @@ public class EGroumBuilder {
 		String sig = fragment.getName().getIdentifier() + "#" + "__FieldOfClass__";
 		
 		System.out.println("EGroumBuilder buildGroum for fragment:" + filepath + " " + name + sig);
-		EGroumGraph g = new EGroumGraph(fragment.getInitializer(), new EGroumBuildingContext(false), configuration);
+		//fragment.getInitializer()
+		EGroumGraph g = new EGroumGraph(fragment, new EGroumBuildingContext(false), configuration);
 		g.setFilePath(filepath);
 		g.setName(name + sig);
 		return g;
