@@ -31,6 +31,7 @@ import com.google.common.collect.Sets;
 
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
 import smu.hongjin.GraphBuildingUtils;
+import smu.hongjin.HJConstants;
 
 /**
  * HJ: labels should be on individual methods in file

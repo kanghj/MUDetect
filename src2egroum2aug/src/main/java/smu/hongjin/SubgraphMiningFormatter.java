@@ -11,6 +11,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageGraph;
 import de.tu_darmstadt.stg.mudetect.aug.model.Edge;
 import de.tu_darmstadt.stg.mudetect.aug.model.Node;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.ConstantNode;
+import de.tu_darmstadt.stg.mudetect.aug.model.data.VariableNode;
 import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
 
 /**
@@ -121,8 +122,37 @@ public class SubgraphMiningFormatter {
 			int nodeNumber = 0;
 			nodeNumber = writeNodesInAug(vertexLabels, writer, aug, vertexNumbers, nodeNumber);
 			
+			Map<Node, Node> equivalentNodeToJoinPoint = new HashMap<>();
 			for (APIUsageGraph relAug : eaug.related) {
-				nodeNumber = writeNodesInAug(vertexLabels, writer, relAug, vertexNumbers, nodeNumber);				
+				Node nodeToJoinAt = eaug.relatedJoinPoint.get(relAug);
+				
+				// iterate through current API usage graph to find same node
+				Node equivalentNode = null;
+				for (Node node : relAug.vertexSet()) {
+					if (node instanceof ConstantNode && nodeToJoinAt instanceof ConstantNode) {
+						ConstantNode constantNode = (ConstantNode) node;
+						ConstantNode constantNodeToJointAt =(ConstantNode) nodeToJoinAt;
+						
+						if (constantNode.getName().equals(constantNodeToJointAt.getName())) {
+							equivalentNode = constantNode;
+							equivalentNodeToJoinPoint.put(equivalentNode, constantNodeToJointAt);
+						}
+					}
+					else if (node instanceof 	VariableNode && nodeToJoinAt instanceof VariableNode) {
+						VariableNode variableNode = (VariableNode) node;
+						VariableNode variableNodeAtJoinAt = (VariableNode) nodeToJoinAt;
+						
+						if (variableNode.getName().equals(variableNodeAtJoinAt.getName())) {
+							equivalentNode = variableNode;
+							equivalentNodeToJoinPoint.put(equivalentNode, variableNodeAtJoinAt);
+						}
+					} else {
+						continue;
+					}
+				}
+				
+				// write nodes of related graph
+				nodeNumber = writeNodesInAug(vertexLabels, writer, relAug, vertexNumbers, nodeNumber, equivalentNode, nodeToJoinAt);				
 			}
 			// write nodes for the interface
 			for (String interfaceObj : eaug.interfaces) {
@@ -143,7 +173,7 @@ public class SubgraphMiningFormatter {
 			//
 			writeEdgesInAug(edgeLabels, writer, aug, vertexNumbers);
 			for (APIUsageGraph relAug : eaug.related) {
-				writeEdgesInAug(edgeLabels, writer, relAug, vertexNumbers);				
+				writeEdgesInAug(edgeLabels, writer, relAug, vertexNumbers, equivalentNodeToJoinPoint);				
 			}
 			
 			writer.write("-\n");
@@ -172,6 +202,12 @@ public class SubgraphMiningFormatter {
 
 	private static void writeEdgesInAug(Map<String, Integer> edgeLabels, BufferedWriter writer, APIUsageGraph aug,
 			Map<Node, Integer> vertexNumbers) throws IOException {
+		
+		writeEdgesInAug(edgeLabels, writer, aug, vertexNumbers, null);
+	}
+	
+	private static void writeEdgesInAug(Map<String, Integer> edgeLabels, BufferedWriter writer, APIUsageGraph aug,
+			Map<Node, Integer> vertexNumbers, Map<Node, Node> equivalentNodeToJoinPoint) throws IOException {
 	
 		
 		for (Edge edge : aug.edgeSet()) {
@@ -183,16 +219,17 @@ public class SubgraphMiningFormatter {
 			
 			int edgeLabelIndex = edgeLabels.get(edgeLabel);			 
 			
-			int sourceNumber = vertexNumbers.get(edge.getSource());
-			int targetNumber = vertexNumbers.get(edge.getTarget());
+			int sourceNumber = getNodenumber(vertexNumbers, equivalentNodeToJoinPoint, edge.getSource());
+			
+			int targetNumber = getNodenumber(vertexNumbers, equivalentNodeToJoinPoint, edge.getTarget());
 			
 			writer.write("e " + sourceNumber + " " + targetNumber + " " + edgeLabelIndex+ "\n");
 			
 			
 			if (edgeLabel.equals("order")) {
 				edgeLabelIndex = edgeLabels.get("order_rev");	
-				sourceNumber = vertexNumbers.get(edge.getTarget());
-				targetNumber = vertexNumbers.get(edge.getSource());
+				sourceNumber = getNodenumber(vertexNumbers, equivalentNodeToJoinPoint, (edge.getTarget()));
+				targetNumber = getNodenumber(vertexNumbers, equivalentNodeToJoinPoint, (edge.getSource()));
 				
 				writer.write("e " + sourceNumber + " " + targetNumber + " " + edgeLabelIndex+ "\n");
 				
@@ -200,9 +237,39 @@ public class SubgraphMiningFormatter {
 		}
 	}
 
+	private static int getNodenumber(Map<Node, Integer> vertexNumbers, Map<Node, Node> equivalentNodeToJoinPoint,
+			Node source) {
+		if (equivalentNodeToJoinPoint == null) {
+			return vertexNumbers.get(source);
+		}
+		
+		int number;
+		if (equivalentNodeToJoinPoint.containsKey(source)) {
+			if (!vertexNumbers.containsKey(equivalentNodeToJoinPoint.get(source))) {
+				throw new RuntimeException("Uhhh This shouldn't happen! " + source.getId());
+			}
+			number = vertexNumbers.get( 
+					equivalentNodeToJoinPoint.get(source)
+					);
+		} else {
+			number = vertexNumbers.get(source);
+		}
+		return number;
+	}
+
 	private static int writeNodesInAug(Map<String, Integer> vertexLabels, BufferedWriter writer, APIUsageGraph aug,
 			Map<Node, Integer> vertexNumbers, int nodeNumber) throws IOException {
+		 return writeNodesInAug(vertexLabels, writer, aug, vertexNumbers, nodeNumber, null,  null);
+		
+	}
+	
+	private static int writeNodesInAug(Map<String, Integer> vertexLabels, BufferedWriter writer, APIUsageGraph aug,
+			Map<Node, Integer> vertexNumbers, int nodeNumber, Node nodeToReplace, Node nodeToJoinAt) throws IOException {
 		for (Node vertex : aug.vertexSet()) {
+			if (vertex != null && nodeToJoinAt != null && vertex == nodeToReplace) {
+				continue;
+			}
+			
 			 String nodeLabel = new BaseAUGLabelProvider().getLabel(vertex);
 			 
 			 if (!vertexLabels.containsKey(nodeLabel)) {

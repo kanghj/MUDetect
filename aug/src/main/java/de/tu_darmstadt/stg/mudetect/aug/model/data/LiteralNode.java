@@ -10,7 +10,13 @@ public class LiteralNode extends BaseNode implements DataNode {
 
     public LiteralNode(String dataType, String dataValue) {
         this.dataType = dataType;
-        this.dataValue = dataValue;
+        
+        
+        if (dataType.equals("String")) {
+        	this.dataValue = dataValue.replaceAll("\n", " "); // HJ: no newlines!
+        } else {
+        	this.dataValue = dataValue;
+        }
     }
 
     @Override

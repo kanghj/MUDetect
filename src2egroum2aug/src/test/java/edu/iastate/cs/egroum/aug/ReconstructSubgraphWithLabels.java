@@ -103,11 +103,11 @@ public class ReconstructSubgraphWithLabels {
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_edgemap.txt",
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_formatted_result",
 //				sorted);
-		
-		convert(pathToVertMapFile(APIunderTest),
-				pathToEdgeMapFile(APIunderTest),
-				pathToFrequentSubgraphFile(APIunderTest),
-				sorted);
+//		
+//		convert(pathToVertMapFile(APIunderTest),
+//				pathToEdgeMapFile(APIunderTest),
+//				pathToFrequentSubgraphFile(APIunderTest),
+//				sorted);
 //		convert("Long",
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.lang.Long__parseLong__1_vertmap.txt",
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.lang.Long__parseLong__1_edgemap.txt",

@@ -27,6 +27,7 @@ import com.google.common.collect.Sets;
 
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
 import smu.hongjin.GraphBuildingUtils;
+import smu.hongjin.HJConstants;
 
 /**
  * After mining significant subgraphs, it is likely that there are more graphs
@@ -92,7 +93,7 @@ public class HJFilesPostprocessor {
 			System.out.println("Selecting");
 			try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
 				paths.filter(Files::isRegularFile).forEach(path -> {
-					if (!HJPipelineGraphBuilder.isExpectedJavaSourceFileFromRightSubdirectory(path)) {
+					if (!HJGraphBuilder.isExpectedJavaSourceFileFromRightSubdirectory(path)) {
 						return;
 					}
 

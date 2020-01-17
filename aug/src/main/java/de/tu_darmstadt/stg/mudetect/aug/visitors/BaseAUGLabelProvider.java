@@ -188,7 +188,7 @@ public class BaseAUGLabelProvider implements AUGLabelProvider {
     		return literalString;
     	}
     	// Otherwise, return both type and value only if frequent enough
-    	if (LiteralsUtils.getFreq(node.getValue()) > 10) {
+    	if (LiteralsUtils.getFreq(node.getValue()) >= 10) {
     		return literalString;
     	} 
     	

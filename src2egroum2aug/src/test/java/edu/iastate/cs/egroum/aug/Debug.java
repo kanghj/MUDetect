@@ -50,34 +50,44 @@ public class Debug {
 				new AUGConfiguration() {
 					{
 						usageExamplePredicate = EAUGUsageExamplesOf(
-								"parseLong",
-								"java.lang.Long");
+								"init",
+								"javax.crypto.Cipher");
 					}
 				});
         
         List<APIUsageGraph> augs = eaugs.stream().map(eaug -> eaug.aug).collect(Collectors.toList());
         exportAUGsAsPNG(augs, "./output/", "Debug-aug");
         
-        Set<EnhancedAUG> enhanced = EnhancedAUG.buildEnhancedAugs(new HashSet<>(augs));
-//        Map<String, Integer> map1 = new HashMap<>();
-//		Map<String, Integer> map2 = new HashMap<>();
-//		try (BufferedWriter writer = new BufferedWriter(new FileWriter("./output/" + "debug" + "_formatted.txt"))) {
-//			SubgraphMiningFormatter.convert(enhanced, EnhancedAUG.class, 0, map1, map2, writer);
-//			System.out.println("will write to \"./output/\" + API + \"_vertmap.txt\""+ " = ./output/" + "debug" +  "_vertmap.txt");
-//			try (BufferedWriter writerVertex = new BufferedWriter(new FileWriter("./output/" + "debug" +  "_vertmap.txt"))) {
-//				for (Entry<String, Integer> entry1 : map1.entrySet()) {
-//					writerVertex.write(entry1.getKey() + "," + entry1.getValue() + "\n");
-//				}
-//			}
-//			System.out.println("will write to \"./output/\" + API + \"_edgemap.txt\"");
-//			try (BufferedWriter writerEdge = new BufferedWriter(new FileWriter("./output/" + "debug" +  "_edgemap.txt"))) {
-//				for (Entry<String, Integer> entry1 : map2.entrySet()) {
-//					writerEdge.write(entry1.getKey() + "," + entry1.getValue() + "\n");
-//				}
-//			}
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+//        Set<EnhancedAUG> enhanced = EnhancedAUG.buildEnhancedAugs(new HashSet<>(augs));
+        Map<String, Integer> map1 = new HashMap<>();
+		Map<String, Integer> map2 = new HashMap<>();
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter("./output/" + "debug" + "_formatted.txt"));
+				BufferedWriter mappingwriter = new BufferedWriter(new FileWriter("./output/" + "debug" + "_mapping.txt"))) {
+			Map<String, String> labels = new HashMap<>();
+			for (EnhancedAUG eaug : eaugs) {
+				String labelId = "id-" + " - " + eaug.aug.name;
+				labels.put(labelId, "U");
+			}
+			
+			SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, 0, map1, map2, "id-", labels, 1, writer, mappingwriter);
+			
+			
+			
+			System.out.println("will write to \"./output/\" + API + \"_vertmap.txt\""+ " = ./output/" + "debug" +  "_vertmap.txt");
+			try (BufferedWriter writerVertex = new BufferedWriter(new FileWriter("./output/" + "debug" +  "_vertmap.txt"))) {
+				for (Entry<String, Integer> entry1 : map1.entrySet()) {
+					writerVertex.write(entry1.getKey() + "," + entry1.getValue() + "\n");
+				}
+			}
+			System.out.println("will write to \"./output/\" + API + \"_edgemap.txt\"");
+			try (BufferedWriter writerEdge = new BufferedWriter(new FileWriter("./output/" + "debug" +  "_edgemap.txt"))) {
+				for (Entry<String, Integer> entry1 : map2.entrySet()) {
+					writerEdge.write(entry1.getKey() + "," + entry1.getValue() + "\n");
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 
 //        Collection<EGroumGraph> egroums = buildEGroumsForClasses(new String[] {code});
@@ -86,7 +96,8 @@ public class Debug {
 
 	private Path path() {
 //		return Paths.get("/Users/kanghongjin//Downloads/github-code-search/java.util.Map__get__1_true/files/10225.UnmodifiableCaseInsensitiveDictionaryMap.java");
-		return Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/asterisk-java/41461b4/checkout/src/main/java/org/asteriskjava/manager/event/RtcpReceivedEvent.java");
+//		return Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/asterisk-java/41461b4/checkout/src/main/java/org/asteriskjava/manager/event/RtcpReceivedEvent.java");
+		return Paths.get("/Users/kanghongjin/Downloads/github-code-search/javax.crypto.Cipher__init__2_true/9204/com/thinkgem/jeesite/common/utils/DesUtils.java.txt");
 	}
 
     private Collection<EGroumGraph> buildEGroumsForClasses(String[] sources) {

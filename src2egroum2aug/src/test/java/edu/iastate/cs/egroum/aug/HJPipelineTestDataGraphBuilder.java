@@ -34,7 +34,8 @@ public class HJPipelineTestDataGraphBuilder {
 //		String API = "java.lang.Long__parseLong__1";
 //		String API = "java.util.Map__get__1";
 //		String API = "java.sql.PreparedStatement__executeUpdate__0";
-		String API = "java.util.StringTokenizer__nextToken__0";
+//		String API = "java.util.StringTokenizer__nextToken__0";
+		String API = "javax.crypto.Cipher__init__2";
 
 		List<String> pathsToJavaFiles = HJRegressionTestConstants.javaFilesForApi.get(API);
 		List<String> pathsToClassPath = HJRegressionTestConstants.javaClassPathForApi.get(API);

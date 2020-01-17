@@ -1,17 +1,7 @@
 package edu.iastate.cs.egroum.aug;
 
-import edu.iastate.cs.egroum.utils.JavaASTUtil;
-import smu.hongjin.EnhancedAUG;
-import smu.hongjin.GraphBuildingUtils;
-import smu.hongjin.LiteralsUtils;
-import smu.hongjin.SubgraphMiningFormatter;
-
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.NumberLiteral;
-import org.eclipse.jdt.core.dom.StringLiteral;
-import org.junit.Test;
+import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClassFromSomewhereElse;
+import static edu.iastate.cs.egroum.aug.ExtendedAUGTypeUsageExamplePredicate.EAUGUsageExamplesOf;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,22 +16,24 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 
-import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClassFromSomewhereElse;
-import static edu.iastate.cs.egroum.aug.ExtendedAUGTypeUsageExamplePredicate.EAUGUsageExamplesOf;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.NumberLiteral;
+import org.eclipse.jdt.core.dom.StringLiteral;
 
-public class HJPipelineGraphBuilder {
+import edu.iastate.cs.egroum.utils.JavaASTUtil;
+import smu.hongjin.EnhancedAUG;
+import smu.hongjin.GraphBuildingUtils;
+import smu.hongjin.HJConstants;
+import smu.hongjin.LiteralsUtils;
+import smu.hongjin.SubgraphMiningFormatter;
 
-	private int i;
-	int fileCounts = 0;
+public class HJGraphBuilder {
+	private static int i;
+	static int fileCounts = 0;
 
-	@Test
-	public void build() throws IOException {
-
-		buildGraphs();
-
-	}
-
-	private void buildGraphs() throws IOException {
+	public static void buildGraphs() throws IOException {
 		for (Entry<String, String> entry : HJConstants.directoriesToExamplesOfAPI.entrySet()) {
 			System.out.println("running " + entry);
 
@@ -159,7 +151,7 @@ public class HJPipelineGraphBuilder {
 						} catch (NullPointerException npe) {
 							System.out.println("err on " + path);
 							npe.printStackTrace();
-
+							System.err.println("err on " + path);
 						} catch (Exception e) {
 							System.out.println("err on " + path);
 							throw new RuntimeException(e);
@@ -199,5 +191,4 @@ public class HJPipelineGraphBuilder {
 		}
 		return true;
 	}
-
 }

@@ -3,7 +3,9 @@ package de.tu_darmstadt.stg.mudetect.aug.model;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +21,9 @@ public class APIUsageGraph extends DirectedMultigraph<Node, Edge> {
     public Set<String> interfaces = new HashSet<>();
 
     public boolean isCtor;
-    public Set<String> fieldsUsed = new HashSet<>(); // cached for easy lookup
+    
+    // fields used and their joining point
+    public Map<String, Node> fieldsUsed = new HashMap<>(); // cached for easy lookup
     
     public APIUsageGraph() {
         super(Edge.class);

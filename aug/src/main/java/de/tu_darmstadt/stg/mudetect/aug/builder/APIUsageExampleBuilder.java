@@ -16,13 +16,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class APIUsageExampleBuilder {
     private final Map<String, Node> nodeMap = new HashMap<>();
     private final Set<Edge> edges = new HashSet<>();
     private final Location location;
 
-    public Set<String> fieldsUsed = new HashSet<>(); // HJ: cached for easy lookup
+    // field names and their join points
+    public Map<String, String> fieldsUsed = new HashMap<>(); // HJ: cached for easy lookup
     
     public static APIUsageExampleBuilder buildAUG(Location location) {
         return new APIUsageExampleBuilder(location);
@@ -207,6 +209,7 @@ public class APIUsageExampleBuilder {
 
     public APIUsageExample build() {
         APIUsageExample aug = new APIUsageExample(location);
+        
         for (Node node : nodeMap.values()) {
             aug.addVertex(node);
             node.setGraph(aug);
@@ -215,7 +218,8 @@ public class APIUsageExampleBuilder {
             aug.addEdge(edge.getSource(), edge.getTarget(), edge);
         }
         
-        aug.fieldsUsed = new HashSet<>(fieldsUsed);
+        aug.fieldsUsed = fieldsUsed.entrySet().stream()
+        		.collect(Collectors.toMap(entry -> entry.getKey(), entry -> nodeMap.get(entry.getValue())));
         return aug;
     }
 }

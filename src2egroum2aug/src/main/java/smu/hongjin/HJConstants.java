@@ -1,4 +1,4 @@
-package edu.iastate.cs.egroum.aug;
+package smu.hongjin;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class HJConstants {
-public static Map<String, String> directoriesToExamplesOfAPI = new HashMap<>();
+	public static Map<String, String> directoriesToExamplesOfAPI = new HashMap<>();
 	
 
 	public static final String examplesRoot = "/Users/kanghongjin/Downloads/github-code-search/";

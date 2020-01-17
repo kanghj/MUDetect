@@ -226,13 +226,14 @@ public class AUGBuilder {
             } else if (node.astNodeType == ASTNode.FIELD_ACCESS) {
             	// HJ TODO: not all field accesses are constants!
             	// HJ: maybe heuristically use capital letter naming
+            	
             	if (hasNoLowerCase(dataName)) {
             		builder.withConstant(nodeId, dataType, dataName, dataValue);
             	} else {
             		builder.withVariable(nodeId, dataType, dataName);
             	}
                 
-                builder.fieldsUsed.add(dataName);
+                builder.fieldsUsed.put(dataName, nodeId);
                 // HJ: cache for easy lookup
                 
                 return;

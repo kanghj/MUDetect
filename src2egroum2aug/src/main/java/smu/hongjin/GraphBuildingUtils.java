@@ -31,27 +31,36 @@ public class GraphBuildingUtils {
 	public static Map<String, String> APIToMethodName = new HashMap<>();
 
 	static {
-		APIToClass.put("java.lang.Long__parseLong__1", "java.lang.Long");
-		APIToMethodName.put("java.lang.Long__parseLong__1", "parseLong");
+//		APIToClass.put("java.lang.Long__parseLong__1", "java.lang.Long");
+//		APIToMethodName.put("java.lang.Long__parseLong__1", "parseLong");
+//		
+//		APIToClass.put("java.io.ObjectOutputStream__writeObject__1", "java.io.ObjectOutputStream");
+//		APIToMethodName.put("java.io.ObjectOutputStream__writeObject__1", "writeObject");
+//		
+//		APIToClass.put("java.io.ByteArrayOutputStream__toByteArray__0", "java.io.ByteArrayOutputStream");
+//		APIToMethodName.put("java.io.ByteArrayOutputStream__toByteArray__0", "toByteArray");
+//		
+//		APIToClass.put("java.util.Map__get__1", "java.util.Map");
+//		APIToMethodName.put("java.util.Map__get__1", "get");
+//		
+//		APIToClass.put("java.sql.PreparedStatement__executeUpdate__0", "java.sql.PreparedStatement");
+//		APIToMethodName.put("java.sql.PreparedStatement__executeUpdate__0", "executeUpdate");
+//		
+//		
+//		APIToClass.put("java.util.StringTokenizer__nextToken__0", "java.util.StringTokenizer");
+//		APIToMethodName.put("java.util.StringTokenizer__nextToken__0", "nextToken");
+//		
+//		APIToClass.put("javax.crypto.Cipher__init__2", "javax.crypto.Cipher");
+//		APIToMethodName.put("javax.crypto.Cipher__init__2", "init");
 		
-		APIToClass.put("java.io.ObjectOutputStream__writeObject__1", "java.io.ObjectOutputStream");
-		APIToMethodName.put("java.io.ObjectOutputStream__writeObject__1", "writeObject");
+	}
+	
+	private static void populateMaps(String API) {
+		String className = API.split("__")[0];
+		APIToClass.put(API, className);
 		
-		APIToClass.put("java.io.ByteArrayOutputStream__toByteArray__0", "java.io.ByteArrayOutputStream");
-		APIToMethodName.put("java.io.ByteArrayOutputStream__toByteArray__0", "toByteArray");
-		
-		APIToClass.put("java.util.Map__get__1", "java.util.Map");
-		APIToMethodName.put("java.util.Map__get__1", "get");
-		
-		APIToClass.put("java.sql.PreparedStatement__executeUpdate__0", "java.sql.PreparedStatement");
-		APIToMethodName.put("java.sql.PreparedStatement__executeUpdate__0", "executeUpdate");
-		
-		
-		APIToClass.put("java.util.StringTokenizer__nextToken__0", "java.util.StringTokenizer");
-		APIToMethodName.put("java.util.StringTokenizer__nextToken__0", "nextToken");
-		
-		APIToClass.put("javax.crypto.Cipher__init__2", "javax.crypto.Cipher");
-		APIToMethodName.put("javax.crypto.Cipher__init__2", "init");
+		String methodName = API.split("__")[1];
+		APIToMethodName.put(API, methodName);
 	}
 	
 
