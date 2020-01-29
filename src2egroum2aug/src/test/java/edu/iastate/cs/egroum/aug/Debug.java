@@ -69,7 +69,7 @@ public class Debug {
 				labels.put(labelId, "U");
 			}
 			
-			SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, 0, map1, map2, "id-", labels, 1, writer, mappingwriter);
+			SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, 0, map1, map2, "id-", labels, 1, "", writer, mappingwriter);
 			
 			
 			

@@ -675,7 +675,8 @@ public class EGroumGraph implements Serializable {
 				if (rns != null) {
 					String rn = rns[0];
 					EGroumActionNode close = closeNodes.get(rn);
-					if (triedMethods.size() == 1 || (m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
+					if (//triedMethods.size() == 1 || 
+							(m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
 						new EGroumDataEdge(m, close, FINALLY);
 					if (rns.length == 2 && !close.hasInDataNode(m, ORDER))
 						new EGroumDataEdge(m, close, ORDER);
@@ -708,7 +709,8 @@ public class EGroumGraph implements Serializable {
 			fg.mergeSequential(pdg1);
 			pdg.mergeSequential(fg);
 			for (EGroumActionNode m : triedMethods) {
-				if (triedMethods.size() == 1 || (m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
+				if (//triedMethods.size() == 1 || 
+						(m.exceptionTypes != null && !m.exceptionTypes.isEmpty()))
 					new EGroumDataEdge(m, fn, FINALLY);
 			}
 			for (EGroumActionNode m : innerTriedMethods) {

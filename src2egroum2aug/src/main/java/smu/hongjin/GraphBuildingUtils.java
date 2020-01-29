@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.APIUsageExample;
@@ -28,42 +29,49 @@ public class GraphBuildingUtils {
 	public static int fileCounts;
 
 	public static Map<String, String> APIToClass = new HashMap<>();
-	public static Map<String, String> APIToMethodName = new HashMap<>();
+	public static Map<String, Set<String>> APIToMethodName = new HashMap<>();
 
-	static {
-//		APIToClass.put("java.lang.Long__parseLong__1", "java.lang.Long");
-//		APIToMethodName.put("java.lang.Long__parseLong__1", "parseLong");
-//		
-//		APIToClass.put("java.io.ObjectOutputStream__writeObject__1", "java.io.ObjectOutputStream");
-//		APIToMethodName.put("java.io.ObjectOutputStream__writeObject__1", "writeObject");
-//		
-//		APIToClass.put("java.io.ByteArrayOutputStream__toByteArray__0", "java.io.ByteArrayOutputStream");
-//		APIToMethodName.put("java.io.ByteArrayOutputStream__toByteArray__0", "toByteArray");
-//		
-//		APIToClass.put("java.util.Map__get__1", "java.util.Map");
-//		APIToMethodName.put("java.util.Map__get__1", "get");
-//		
-//		APIToClass.put("java.sql.PreparedStatement__executeUpdate__0", "java.sql.PreparedStatement");
-//		APIToMethodName.put("java.sql.PreparedStatement__executeUpdate__0", "executeUpdate");
-//		
-//		
-//		APIToClass.put("java.util.StringTokenizer__nextToken__0", "java.util.StringTokenizer");
-//		APIToMethodName.put("java.util.StringTokenizer__nextToken__0", "nextToken");
-//		
-//		APIToClass.put("javax.crypto.Cipher__init__2", "javax.crypto.Cipher");
-//		APIToMethodName.put("javax.crypto.Cipher__init__2", "init");
+	static {	
+		for (Entry<String, Set<String>> entry : HJConstants.directoriesToExamplesOfAPI.entrySet()) {
+			String API = entry.getKey();
+			populateMaps(API, entry.getValue());
+		}
+		// special cases
+//		APIToClass.put("java.sql.PreparedStatement__execute*__0", className);
+		
+		APIToClass.put("java.util.Scanner__next__0", "java.util.Iterator"); // a scanner is really just an iterator.
+		APIToClass.put("java.io.PrintWriter__write__1", "java.io.Writer"); //
+		APIToClass.put("javax.swing.JFrame__setVisible__1", "java.awt.Window"); // 
+		// In fact, the `next` method simply comes from iterator. Without special handling, we can't match against scanner next correctly. 
 		
 	}
 	
-	private static void populateMaps(String API) {
+	private static void populateMaps(String API, Set<String> directories) {
 		String className = API.split("__")[0];
 		APIToClass.put(API, className);
 		
-		String methodName = API.split("__")[1];
-		APIToMethodName.put(API, methodName);
+		if (API.contains("*")) {
+			for (String directory : directories) {
+				String[] splitted = directory.split("/");
+				String subIdentifier = splitted[splitted.length - 1];
+				
+				APIToMethodName.putIfAbsent(API, new HashSet<>());
+				
+				// sub identifier looks like "java.sql.PreparedStatement__executeUpdate__0_true"
+				String methodName = subIdentifier.split("__")[1];
+				
+				APIToMethodName.get(API).add(methodName);
+			}
+			
+			
+		} else {
+			String methodName = API.split("__")[1];
+			APIToMethodName.put(API, Collections.singleton(methodName));
+		}
+		
+		
 	}
 	
-
 
 	public static void readCounts(String directory, Map<String, Integer> quantities) {
 		List<String> lines = Collections.emptyList();
@@ -74,13 +82,17 @@ public class GraphBuildingUtils {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		
+		String[] diectorysplitted = directory.split("/");
+		String subIdentifier = diectorysplitted[diectorysplitted.length - 1];
+
 
 		for (String line : lines) {
 			String[] splitted = line.split(",");
 			String id = splitted[0];
 			int quantity = Integer.parseInt(splitted[1]);
 
-			quantities.put(id, quantity);
+			quantities.put(subIdentifier + id, quantity);
 		}
 	}
 
@@ -109,7 +121,6 @@ public class GraphBuildingUtils {
 				label = splitted[1];
 			}
 
-			i += 1;
 			labels.put(location, label);
 		}
 	}

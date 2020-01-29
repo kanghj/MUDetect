@@ -1,10 +1,12 @@
 package edu.iastate.cs.egroum.aug;
 
-
 import static edu.iastate.cs.egroum.aug.ExtendedAUGTypeUsageExamplePredicate.EAUGUsageExamplesOf;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -43,184 +45,214 @@ import smu.hongjin.HJConstants;
  */
 public class HJFilesPreprocessor {
 
-	int percentageToLabel = 1;
+	static double percentageToLabel = 0.5;
 
-	int percentageToPartitionToTest = 1;
+	static int percentageToPartitionToTest = 1;
 
-	Map<String, Set<String>> pathsAndMethodToTokens = new HashMap<>();
-	Map<String, Integer> pathsAndMethodToCounts = new HashMap<>();
+	static Map<String, Set<String>> pathsAndMethodToTokens = new HashMap<>();
+	static Map<String, Integer> pathsAndMethodToCounts = new HashMap<>();
 
 	@Test
-	public void debug() {
+	public void debug() throws FileNotFoundException, IOException {
 		preprocess();
 	}
 
-	public void preprocess() {
-		for (Entry<String, String> entry : HJConstants.directoriesToExamplesOfAPI.entrySet()) {
-			String API = entry.getKey();
-			String directory = entry.getValue();
+	public static void preprocess() throws FileNotFoundException, IOException {
+		// for labelling, we still split up multiple directories of an API
+		for (String API : HJConstants.APIUnderMiner) {
+			Set<String> directories = HJConstants.directoriesToExamplesOfAPI.get(API);
 			
-			if (!directory.endsWith("/")) {
-				throw new RuntimeException("Directories should end with '/'");
-			}
+//			String API = entry.getKey();
+//			Set<String> directories = entry.getValue();
+			System.out.println(API);
+			
 
-			Random r = new java.util.Random();
+			for (String directory : directories) {
+				
+				// first, let's count the number lines in metadata
+				int numOfLines = 0;
+				try (BufferedReader reader = new BufferedReader(new FileReader(directory + "/metadata/metadata.csv"))) {
+					while (reader.readLine() != null) {
+			    		numOfLines++;
+			    	}
+				}
+				
+				System.out.println("percentageToLabel * numOfLines = " + (percentageToLabel / 100 * numOfLines));
+				if (percentageToLabel / 100 * numOfLines < 10) {
+					// too few labeled examples
+					percentageToLabel = (float)10 / numOfLines * 100;
+					System.out.println("Changing the percentage to label to " + percentageToLabel);
+				}
 
-			if (new File(directory + "test_labels.csv").exists()) {
-				System.out.println("delete existing test_labels.csv first");
-				throw new RuntimeException("remove existing test_labels.csv first");
+				if (!directory.endsWith("/")) {
+					throw new RuntimeException("Directories should end with '/'");
+				}
+
+				Random r = new java.util.Random();
+
+				if (new File(directory + "test_labels.csv").exists()) {
+					System.out.println("delete existing test_labels.csv first");
+					throw new RuntimeException("remove existing test_labels.csv first");
 //				new File(directory + "test_labels.csv").delete();
-			}
+				}
 
-			if (new File(directory + "labels.csv").exists()) {
-				System.out.println("deleting existing labels.csv first");
-				new File(directory + "labels.csv").delete();
-			}
+				if (new File(directory + "labels.csv").exists()) {
+					System.out.println("deleting existing labels.csv first");
+					new File(directory + "labels.csv").delete();
+				}
 
-			try (BufferedWriter trainingDataWriter = new BufferedWriter(new FileWriter(directory + "labels.csv", true));
-					BufferedWriter testDataWriter = new BufferedWriter(
-							new FileWriter(directory + "test_labels.csv", true))) {
+				try (BufferedWriter trainingDataWriter = new BufferedWriter(
+						new FileWriter(directory + "labels.csv", true));
+						BufferedWriter testDataWriter = new BufferedWriter(
+								new FileWriter(directory + "test_labels.csv", true))) {
 
-				trainingDataWriter.write("location,label(either 'M' for misuse or 'C' for correct usage)\n");
+					trainingDataWriter.write("location,label(either 'M' for misuse or 'C' for correct usage)\n");
 
-				try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
-					paths.filter(Files::isRegularFile).forEach(path -> {
-						if (path.endsWith("labels.csv") || path.endsWith("metadata.csv")
-								|| path.endsWith("metadata_locations.csv")) {
-							return;
-						}
-						if (path.toString().contains("/files/")) {
-							System.out.println("Skipping : " + path + ", which contains /files");
-							return;
-						}
-						if (!path.toString().endsWith(".java.txt")) {
+					try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
+						paths.filter(Files::isRegularFile).forEach(path -> {
+							if (path.endsWith("labels.csv") || path.endsWith("metadata.csv")
+									|| path.endsWith("metadata_locations.csv")) {
+								return;
+							}
+							if (path.toString().contains("/files/")) {
+								System.out.println("Skipping : " + path + ", which contains /files");
+								return;
+							}
+							if (!path.toString().endsWith(".java.txt")) {
 
-							System.out.println("Skipping : " + path
-									+ ". Unexpected file extension. We only look for java.txt files");
-							return;
-						}
+								System.out.println("Skipping : " + path
+										+ ". Unexpected file extension. We only look for java.txt files");
+								return;
+							}
 
-
-						System.out.println("path is " + path);
+							System.out.println("path is " + path);
 
 //						System.out.println("\t " + path.toString().indexOf(directory));
 
-						String id = path.toString().substring(directory.length()).split("/")[0];
+							String id = path.toString().substring(directory.length()).split("/")[0];
 
-						String code;
-						try {
-							code = new String(Files.readAllBytes(path));
+							String code;
+							try {
+								code = new String(Files.readAllBytes(path));
 
-							String filePath = path.toFile().toString();
-							CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(code, filePath,
-									filePath.substring(filePath.lastIndexOf("/")), null);
-							
+								String filePath = path.toFile().toString();
+								String additionalJar = ExtendedAUGTypeUsageExamplePredicate.additionalJar.get(API);
+								
+								CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(code, filePath,
+										filePath.substring(filePath.lastIndexOf("/")),
+										additionalJar != null 
+												? new String[] {filePath, additionalJar}
+												: new String[] {filePath}
+//										null
+										);
+
 //							String packageName = cu.getPackage().getName().toString();
 
-							Set<String> uniq = new HashSet<>();
-							Set<String> clones = new HashSet<>(); // clones can only map to unlabeled
+								Set<String> uniq = new HashSet<>();
+								Set<String> clones = new HashSet<>(); // clones can only map to unlabeled
 
-							for (int i = 0; i < cu.types().size(); i++) {
-								if (cu.types().get(i) instanceof TypeDeclaration) {
-									TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
+								for (int i = 0; i < cu.types().size(); i++) {
+									if (cu.types().get(i) instanceof TypeDeclaration) {
+										TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
 
-									for (MethodDeclaration md : typ.getMethods()) {
-										if (!GraphBuildingUtils.APIToMethodName.containsKey(API) || 
-												!GraphBuildingUtils.APIToClass.containsKey(API)
-												) {
-											throw new RuntimeException("GraphBuildingUtils does not have the necessary information");
-										}
-										if (!EAUGUsageExamplesOf(GraphBuildingUtils.APIToMethodName.get(API),
-												GraphBuildingUtils.APIToClass.get(API)).matches(md)) {
+										for (MethodDeclaration md : typ.getMethods()) {
+											if (!GraphBuildingUtils.APIToMethodName.containsKey(API)
+													|| !GraphBuildingUtils.APIToClass.containsKey(API)) {
+												throw new RuntimeException(
+														"GraphBuildingUtils does not have the necessary information");
+											}
+											if (!EAUGUsageExamplesOf(GraphBuildingUtils.APIToMethodName.get(API),
+													GraphBuildingUtils.APIToClass.get(API)).matches(md)) {
 //											System.out.println("\tno match " + md.getName());
-											continue;
-										}
+												continue;
+											}
 
-										if (isTooBig(md)) {
-											System.out.println("\ttoo big");
-											continue;
-										}
+											if (isTooBig(md)) {
+												System.out.println("\ttoo big");
+												continue;
+											}
 
-										boolean isClone = isCloneOfPrevious(filePath, md);
+											boolean isClone = isCloneOfPrevious(filePath, md);
 
-										String sig = JavaASTUtil.buildSignature(md);
-										if (isClone) {
-											clones.add(id + " - " + typ.getName().getIdentifier() + "." + sig);
-										} else {
-											uniq.add(id + " - " + typ.getName().getIdentifier() + "." + sig);
+											String sig = JavaASTUtil.buildSignature(md);
+											if (isClone) {
+												clones.add(id + " - " + typ.getName().getIdentifier() + "." + sig);
+											} else {
+												uniq.add(id + " - " + typ.getName().getIdentifier() + "." + sig);
+											}
 										}
 									}
 								}
-							}
-							for (String item : uniq) {
-								int randomValue = r.nextInt(100);
-								if (randomValue < percentageToLabel) { // [0..percentageToLabel-1]
-									trainingDataWriter.write(item);
-									trainingDataWriter.write(",?\n");
-								} else if (randomValue > percentageToLabel
-										&& randomValue <= percentageToLabel + percentageToPartitionToTest) {
-									// [percentageToLabel .. percentageToLabel + percentageToPartitionToTest-1]
-									// for testing
-									testDataWriter.write(item);
-									testDataWriter.write(",?\n");
-								} else {
-									trainingDataWriter.write(item);
-									trainingDataWriter.write(",\n");
+								for (String item : uniq) {
+									int randomValue = r.nextInt(100);
+									if (randomValue < percentageToLabel) { // [0..percentageToLabel-1]
+										trainingDataWriter.write(item);
+										trainingDataWriter.write(",?\n");
+									} else if (randomValue > percentageToLabel
+											&& randomValue <= percentageToLabel + percentageToPartitionToTest) {
+										// [percentageToLabel .. percentageToLabel + percentageToPartitionToTest-1]
+										// for testing
+										testDataWriter.write(item);
+										testDataWriter.write(",?\n");
+									} else {
+										trainingDataWriter.write(item);
+										trainingDataWriter.write(",\n");
+									}
 								}
-							}
 
-							for (String item : clones) {
-								int randomValue = r.nextInt(100);
-								if (randomValue > percentageToLabel
-										&& randomValue < percentageToLabel + percentageToPartitionToTest) {
-									// [percentageToLabel .. percentageToLabel + percentageToPartitionToTest]
-									// for testing
-									testDataWriter.write(item);
-									testDataWriter.write(",?\n");
-								} else {
-									trainingDataWriter.write(item);
-									trainingDataWriter.write(",\n");
+								for (String item : clones) {
+									double randomValue = r.nextDouble() * 100;
+									if (randomValue > percentageToLabel
+											&& randomValue < percentageToLabel + percentageToPartitionToTest) {
+										// [percentageToLabel .. percentageToLabel + percentageToPartitionToTest]
+										// for testing
+										testDataWriter.write(item);
+										testDataWriter.write(",?\n");
+									} else {
+										trainingDataWriter.write(item);
+										trainingDataWriter.write(",\n");
+									}
 								}
-							}
 
+							} catch (IOException e) {
+								e.printStackTrace();
+								throw new RuntimeException(e);
+							} catch (IllegalStateException ise) {
+								ise.printStackTrace();
+								System.out.println("Unable to parse java file");
+								return;
+							} catch (NullPointerException npe) {
+								npe.printStackTrace();
+								System.out.println("Unable to parse java file");
+								return;
+							}
+						});
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+					throw new RuntimeException(e);
+				}
+
+				System.out.println(
+						"renaming files from .java.txt to .java. It was .java.txt due to some legacy constraint on the github searching tool");
+				try (Stream<Path> paths = Files.walk(Paths.get(directory + "files/"))) {
+					paths.filter(Files::isRegularFile).forEach(path -> {
+						try {
+							Files.move(path, Paths.get(path.toString().replace(".java.txt", ".java")));
 						} catch (IOException e) {
+							System.out.println("Failed to move file");
 							e.printStackTrace();
-							throw new RuntimeException(e);
-						} catch (IllegalStateException ise) {
-							ise.printStackTrace();
-							System.out.println("Unable to parse java file");
-							return;
-						} catch (NullPointerException npe) {
-							npe.printStackTrace();
-							System.out.println("Unable to parse java file");
-							return;
 						}
 					});
+				} catch (IOException e1) {
+					System.out.println("Failed to get files in 'files/' directory");
+					e1.printStackTrace();
+					throw new RuntimeException(e1);
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				throw new RuntimeException(e);
+
+				System.out.println("It's time to start labeling. Fill in " + directory + "labels.csv");
+
 			}
-
-			System.out.println(
-					"renaming files from .java.txt to .java. It was .java.txt due to some legacy constraint on the github searching tool");
-			try (Stream<Path> paths = Files.walk(Paths.get(directory + "files/"))) {
-				paths.filter(Files::isRegularFile).forEach(path -> {
-					try {
-						Files.move(path, Paths.get(path.toString().replace(".java.txt", ".java")));
-					} catch (IOException e) {
-						System.out.println("Failed to move file");
-						e.printStackTrace();
-					}
-				});
-			} catch (IOException e1) {
-				System.out.println("Failed to get files in 'files/' directory");
-				e1.printStackTrace();
-				throw new RuntimeException(e1);
-			}
-
-			System.out.println("It's time to start labeling. Fill in " + directory + "labels.csv");
-
 		}
 	}
 
@@ -240,7 +272,7 @@ public class HJFilesPreprocessor {
 		return count > new AUGConfiguration().maxStatements;
 	}
 
-	private boolean isCloneOfPrevious(String path, MethodDeclaration md) {
+	private static boolean isCloneOfPrevious(String path, MethodDeclaration md) {
 
 		Set<String> tokens = new HashSet<>();
 
@@ -267,6 +299,7 @@ public class HJFilesPreprocessor {
 		} else {
 			pathsAndMethodToCounts.put(path + "::" + md.getName(), 0);
 			pathsAndMethodToTokens.put(path + "::" + md.getName(), tokens);
+			System.out.println("\t is not clone!");
 			return false;
 		}
 	}

@@ -63,14 +63,35 @@ public class Debug3 {
 //        		"        is.close();\n" + 
 //        		"    }\n" + 
 //        		"}";
-    	String code ="public class A {\n" + 
-    			"	\n" + 
-    			"	String x = \"1\";\n" + 
+//    	String code ="public class A {\n" + 
+//    			"	\n" + 
+//    			"	String x = \"1\";\n" + 
+//    			"\n" + 
+//    			"	public long lol() {x=getString();x=getString1();return java.lang.Long.parseLong(x);\n" + 
+//    			"\n" + 
+//    			"	}\n" + 
+//    			"\n" + 
+//    			"}";
+    	String code = "" + 
+    			"import java.io.File;\n" + 
+    			"import java.io.PrintWriter;\n" + 
     			"\n" + 
-    			"	public long lol() {x=getString();x=getString1();return java.lang.Long.parseLong(x);\n" + 
+    			"public class Scratch {\n" + 
     			"\n" + 
+    			"	public static void main() {\n" + 
+    			"		File f = new File(\"hello_world\"); \n" + 
+    			"		try (PrintWriter pw = new PrintWriter(f)) {\n" + 
+    			"			\n" + 
+    			"			int i = hello();\n" + 
+    			"		} catch(Exception e) {\n" + 
+    			"			\n" + 
+    			"			\n" + 
+    			"		} finally {\n" + 
+    			"			System.out.println(\"hello world\");\n" + 
+    			"		}\n" + 
+    			"			\n" + 
     			"	}\n" + 
-    			"\n" + 
+    			"	\n" + 
     			"}";
 
         LiteralsUtils.isTestTime = true;
@@ -89,7 +110,7 @@ public class Debug3 {
 				labels.put(labelId, "U");
 			}
 			
-			SubgraphMiningFormatter.convert(enhanced, EnhancedAUG.class, 0, map1, map2, "id-", labels, 1, writer, mappingwriter);
+			SubgraphMiningFormatter.convert(enhanced, EnhancedAUG.class, 0, map1, map2, "id-", labels, 1, "", writer, mappingwriter);
 			
 			
 			

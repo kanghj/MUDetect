@@ -61,17 +61,45 @@ public class ReconstructSubgraphWithLabels {
 	public void debug2() throws IOException {
 
 		Map<Integer, Float> bestSubgraphs = new HashMap<>();
-//		Path path = Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1_formatted_result_best_subgraphs.txt");
-//		Path path = Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.lang.Long__parseLong__1_formatted_result_best_subgraphs.txt");
-//		Path path = Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_formatted_result_best_subgraphs.txt");
-//		Path path = Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_formatted_result_best_subgraphs.txt");
-//		Files.lines(Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ByteArrayOutputStream__toByteArray__0_formatted.txt_result_best_subgraphs.txt")).map(s -> s.trim())
+
+//		String APIunderTest = "java.sql.PreparedStatement__execute*__0";
 		
-		String APIunderTest = "javax.crypto.Cipher__init__2";
+//		String APIunderTest = "java.util.Iterator__next__0";
+//		String APIunderTest = "javax.crypto.Cipher__init__2";
+//		String APIunderTest = "java.io.ObjectOutputStream__writeObject__1";
+//		String APIunderTest = "java.io.DataOutputStream__<init>__1";
+//		String APIunderTest = "java.util.List__get__1";
+//		String APIunderTest = "java.lang.Long__parseLong__1";
+//		String APIunderTest = "java.lang.Short__parseShort__1";
+//		String APIunderTest = "org.jfree.data.statistics.StatisticalCategoryDataset__getMeanValue__2";
+//		String APIunderTest = "java.util.Scanner__next__0";	
+//		String APIunderTest = "com.itextpdf.text.pdf.PdfArray__getPdfObject__1";
+//		String APIunderTest = "java.sql.ResultSet__next__0";
+//		String APIunderTest = "java.util.StringTokenizer__nextToken__0";
+//		String APIunderTest = "org.apache.lucene.index.SegmentInfos__info__1";
+//		String APIunderTest = "java.lang.Byte__parseByte__1";
+		String APIunderTest = "java.util.Map__get__1";
+//		String APIunderTest = "java.util.Enumeration__nextElement__0";
+//		String APIunderTest = "org.jfree.chart.plot.XYPlot__getRendererForDataset__1";
+//		String APIunderTest = "org.jfree.chart.plot.PlotRenderingInfo__getOwner__0";
+//		String APIunderTest = "com.itextpdf.text.pdf.PdfDictionary__getAsString__1";
+//		String APIunderTest = "org.jfree.chart.plot.CategoryPlot__getDataset__1";
+//		String APIunderTest = "java.util.SortedMap__firstKey__0";
+//		String APIunderTest = "java.nio.ByteBuffer__put__1";
+//		String APIunderTest = "org.kohsuke.args4j.spi.Parameters__getParameter__1";
+//		String APIunderTest = "java.nio.channels.FileChannel__write__1";
+//		String APIunderTest = "java.io.PrintWriter__write__1";
+//		String APIunderTest = "javax.swing.JFrame__setVisible__1";
+//		String APIunderTest = "java.util.Optional__get__0";
+		
+		
+		if (APIunderTest.endsWith("true")) {
+			throw new RuntimeException("accidentally ended API's name with true");
+		}
+		
 		Path path = guessPathToBestSubgraphFile(APIunderTest);
 		
 		Files.lines(path).map(s -> s.trim())
-//		Files.lines(Paths.get("/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.sql.PreparedStatement__executeUpdate__0_formatted_result_best_subgraphs.txt")).map(s -> s.trim())
 				.filter(s -> !s.isEmpty()).forEach(line -> {
 					String[] splitted = line.split(",");
 					
@@ -93,36 +121,7 @@ public class ReconstructSubgraphWithLabels {
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ByteArrayOutputStream__toByteArray__0_edgemap.txt",
 //				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ByteArrayOutputStream__toByteArray__0_formatted.txt_result",
 //				bestSubgraphs);
-//		convert("ObjectOutputStream",
-//						"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_vertmap.txt",
-//						"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_edgemap.txt",
-//						"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.io.ObjectOutputStream__writeObject__1_formatted_result",
-//						sorted);
-//		convert(
-//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_vertmap.txt",
-//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_edgemap.txt",
-//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.StringTokenizer__nextToken__0/java.util.StringTokenizer__nextToken__0_formatted_result",
-//				sorted);
-//		
-//		convert(pathToVertMapFile(APIunderTest),
-//				pathToEdgeMapFile(APIunderTest),
-//				pathToFrequentSubgraphFile(APIunderTest),
-//				sorted);
-//		convert("Long",
-//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.lang.Long__parseLong__1_vertmap.txt",
-//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.lang.Long__parseLong__1_edgemap.txt",
-//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.lang.Long__parseLong__1_formatted_result",
-//				sorted);
-//		convert("Map",
-//		"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1_vertmap.txt",
-//		"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1_edgemap.txt",
-//		"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1_formatted_result",
-//		sorted);
-//		convert("PreparedStatement",
-//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.sql.PreparedStatement__executeUpdate__0_vertmap.txt",
-//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.sql.PreparedStatement__executeUpdate__0_edgemap.txt",
-//				"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.sql.PreparedStatement__executeUpdate__0_formatted_result",
-//				bestSubgraphs);
+
 
 	}
 

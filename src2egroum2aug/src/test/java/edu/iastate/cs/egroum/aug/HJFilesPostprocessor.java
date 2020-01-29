@@ -41,9 +41,9 @@ import smu.hongjin.HJConstants;
  */
 public class HJFilesPostprocessor {
 
-	Map<String, Set<String>> pathsAndMethodToTokens = new HashMap<>();
-	Map<String, Integer> pathsAndMethodToCounts = new LinkedHashMap<>();
-	Map<String, List<Integer>> pathsAndMethodToGraphIds = new LinkedHashMap<>();
+	static Map<String, Set<String>> pathsAndMethodToTokens = new HashMap<>();
+	static Map<String, Integer> pathsAndMethodToCounts = new LinkedHashMap<>();
+	static Map<String, List<Integer>> pathsAndMethodToGraphIds = new LinkedHashMap<>();
 
 	@Test
 	public void debug() throws IOException {
@@ -51,22 +51,22 @@ public class HJFilesPostprocessor {
 		postprocess();
 	}
 
-	public void postprocess() throws IOException {
-		for (Entry<String, String> entry : HJConstants.directoriesToExamplesOfAPI.entrySet()) {
-			String API = entry.getKey();
-			String directory = entry.getValue();
+	public static void postprocess() throws IOException {
+		
+		for (String API : HJConstants.APIUnderMiner) {
+			Set<String> directories = HJConstants.directoriesToExamplesOfAPI.get(API);
 
 			List<String> graphIdsToRead = new ArrayList<>();
-			List<String> allLines = Files
-					.readAllLines(Paths.get("./output/" + API + "/" + API + "_formatted_result_interesting_unlabeled.txt"));
+			List<String> allLines = Files.readAllLines(
+					Paths.get("./output/" + API + "/" + API + "_formatted_result_interesting_unlabeled.txt"));
 			for (String line : allLines) {
 				graphIdsToRead.add(line);
 			}
 
 			Set<String> fileIdsToRead = new HashSet<>();
 			allLines = Files.readAllLines(Paths.get("./output/" + API + "/" + API + "_graph_id_mapping.txt"));
-			
-			Map<Integer, List<Integer>> fileIdToGraphIds = new HashMap<>();
+
+			Map<String, List<Integer>> fileIdToGraphIds = new HashMap<>();
 			for (String line : allLines) {
 				String[] splitted = line.split(",");
 				String graphId = splitted[1];
@@ -77,83 +77,81 @@ public class HJFilesPostprocessor {
 
 				fileIdsToRead.add(splitted[0]);
 
-				int fileId;
-				try {
-					// throw early if id is not integer, which it should be
-					fileId = Integer.parseInt(splitted[0]);
-				} catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-				
-				fileIdToGraphIds.putIfAbsent(fileId, new ArrayList<>());				
-				fileIdToGraphIds.get(fileId).add(Integer.parseInt(graphId));
+				String labelId = splitted[0];
 
+				fileIdToGraphIds.putIfAbsent(labelId, new ArrayList<>());
+				fileIdToGraphIds.get(labelId).add(Integer.parseInt(graphId));
 			}
 
 			System.out.println("Selecting");
-			try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
-				paths.filter(Files::isRegularFile).forEach(path -> {
-					if (!HJGraphBuilder.isExpectedJavaSourceFileFromRightSubdirectory(path)) {
-						return;
-					}
+			for (String directory : directories) {
+				try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
+					paths.filter(Files::isRegularFile).forEach(path -> {
+						if (!HJGraphBuilder.isExpectedJavaSourceFileFromRightSubdirectory(path)) {
+							return;
+						}
 
-					System.out.println("path is " + path);
+						System.out.println("path is " + path);
 
-					String after = path.toAbsolutePath().toString().substring(directory.length());
-					String id = after.split("/")[0];
+						String after = path.toAbsolutePath().toString().substring(directory.length());
+						String id = after.split("/")[0];
 
-					try {
-						// throw early if id is not integer, which it should be
-						Integer.parseInt(id);
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
+						String[] splitted = directory.split("/");
+						String subIdentifier = splitted[splitted.length - 1];
 
-					if (!fileIdsToRead.contains(id)) {
-						return;
-					}
+						if (!fileIdsToRead.contains(subIdentifier + id) && !fileIdsToRead.contains(id)) {
+							return;
+						}
+						id = subIdentifier + id;
 
-					String code;
-					try {
-						code = new String(Files.readAllBytes(path));
+						String code;
+						try {
+							code = new String(Files.readAllBytes(path));
 
-						String filePath = path.toFile().toString();
-						CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(code, filePath,
-								filePath.substring(filePath.lastIndexOf("/")), null);
+							String filePath = path.toFile().toString();
+							CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(code, filePath,
+									filePath.substring(filePath.lastIndexOf("/")), null);
 
-						for (int i = 0; i < cu.types().size(); i++) {
-							if (cu.types().get(i) instanceof TypeDeclaration) {
-								TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
+							for (int i = 0; i < cu.types().size(); i++) {
+								if (cu.types().get(i) instanceof TypeDeclaration) {
+									TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
 
-								for (MethodDeclaration md : typ.getMethods()) {
-									if (!EAUGUsageExamplesOf(GraphBuildingUtils.APIToMethodName.get(API),
-											GraphBuildingUtils.APIToClass.get(API)).matches(md)) {
-										continue;
-									}
+									for (MethodDeclaration md : typ.getMethods()) {
+										boolean hasMstachingMethodName = false;
+										for (String methodName : GraphBuildingUtils.APIToMethodName.get(API)) {
+											if (EAUGUsageExamplesOf(
+													methodName,
+													GraphBuildingUtils.APIToClass.get(API)).matches(md)) {
+												hasMstachingMethodName = true;
+											}											
+										}
+										if (!hasMstachingMethodName) continue;
+										
 
-									if (HJFilesPreprocessor.isTooBig(md)) {
-										continue;
-									}
+										if (HJFilesPreprocessor.isTooBig(md)) {
+											continue;
+										}
 
-									boolean isClone = checkCloneOfPreviousAndDoStuff(
-											filePath, md, fileIdToGraphIds.get(Integer.parseInt(id)));
+										boolean isClone = checkCloneOfPreviousAndDoStuff(filePath, md,
+												fileIdToGraphIds.get(id));
 
-									if (!isClone) {
+										if (!isClone) {
+										}
 									}
 								}
 							}
+
+						} catch (IOException e) {
+							e.printStackTrace();
+							throw new RuntimeException(e);
+						} catch (IllegalStateException ise) {
+							ise.printStackTrace();
+							System.out.println("Unable to parse java file");
+							return;
 						}
 
-					} catch (IOException e) {
-						e.printStackTrace();
-						throw new RuntimeException(e);
-					} catch (IllegalStateException ise) {
-						ise.printStackTrace();
-						System.out.println("Unable to parse java file");
-						return;
-					}
-
-				});
+					});
+				}
 			}
 			Optional<Integer> total = pathsAndMethodToCounts.values().stream()
 					.reduce((accumulated, current) -> accumulated + current);
@@ -172,7 +170,7 @@ public class HJFilesPostprocessor {
 		}
 	}
 
-	private boolean checkCloneOfPreviousAndDoStuff(String path, MethodDeclaration md,  List<Integer> graphIds) {
+	private static boolean checkCloneOfPreviousAndDoStuff(String path, MethodDeclaration md, List<Integer> graphIds) {
 
 		Set<String> tokens = new HashSet<>();
 

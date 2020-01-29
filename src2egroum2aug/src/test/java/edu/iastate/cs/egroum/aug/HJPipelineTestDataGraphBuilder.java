@@ -32,11 +32,44 @@ public class HJPipelineTestDataGraphBuilder {
 
 //		String API = "java.io.ObjectOutputStream__writeObject__1";
 //		String API = "java.lang.Long__parseLong__1";
-//		String API = "java.util.Map__get__1";
+		String API = "java.util.Map__get__1";
+//		String API = "java.util.List__get__1";
 //		String API = "java.sql.PreparedStatement__executeUpdate__0";
 //		String API = "java.util.StringTokenizer__nextToken__0";
-		String API = "javax.crypto.Cipher__init__2";
+//		String API = "javax.crypto.Cipher__init__2";
+//		String API = "java.io.DataOutputStream__<init>__1";
+//		String API = "java.sql.PreparedStatement__execute*__0";
 
+//		String API = "java.util.Iterator__next__0";
+//		String API = "java.io.DataOutputStream__<init>__1";
+		
+//		String API = "org.jfree.data.statistics.StatisticalCategoryDataset__getMeanValue__2";
+//		String API = "java.util.Scanner__next__0";
+//		String API = "com.itextpdf.text.pdf.PdfArray__getPdfObject__1";
+//		String API = "java.sql.ResultSet__next__0";
+//		String API ="org.apache.lucene.index.SegmentInfos__info__1";
+//		String API ="java.lang.Byte__parseByte__1";
+//		String API ="java.lang.Short__parseShort__1";
+//		String API ="java.util.Enumeration__nextElement__0";
+//		String API = "org.jfree.chart.plot.XYPlot__getRendererForDataset__1";
+//		String API = "org.jfree.chart.plot.PlotRenderingInfo__getOwner__0";
+		
+//		String API = "org.jfree.chart.plot.CategoryPlot__getDataset__1";
+		
+//		String API = "com.itextpdf.text.pdf.PdfDictionary__getAsString__1";
+//		String API = "java.nio.ByteBuffer__put__1";
+//		String API =  "java.util.SortedMap__firstKey__0";
+//		String API = "org.kohsuke.args4j.spi.Parameters__getParameter__1";
+//		String API = "java.nio.channels.FileChannel__write__1";
+//		String API = "java.io.PrintWriter__write__1";
+//		String API = "javax.swing.JFrame__setVisible__1";
+//		String API = "java.util.Optional__get__0";
+		
+		buildGraphs(API);
+
+	}
+
+	public static void buildGraphs(String API) {
 		List<String> pathsToJavaFiles = HJRegressionTestConstants.javaFilesForApi.get(API);
 		List<String> pathsToClassPath = HJRegressionTestConstants.javaClassPathForApi.get(API);
 		
@@ -44,12 +77,6 @@ public class HJPipelineTestDataGraphBuilder {
 			throw new RuntimeException("wrong size");
 		}
 		
-		// PreparedStatement?
-//		List<String> pathsToJavaFiles = Arrays.asList(
-//				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/chensun/cf23b99/checkout/CS5430/src//database/SocialNetworkDatabasePosts.java",
-//				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/chensun/cf23b99/checkout/CS5430/src//database/DatabaseAdmin.java",
-//				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/chensun/cf23b99/checkout/CS5430/src//database/SocialNetworkDatabaseBoards.java"
-//				);
 
 		String directoryToLabels = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + API + "/";
 		
@@ -94,7 +121,7 @@ public class HJPipelineTestDataGraphBuilder {
 						classpath);
 	
 	
-				System.out.println("\tFound!");
+				System.out.println("\tFinished building some eaugs!");
 				for (EnhancedAUG eaug : eaugs) {
 					System.out.println("\t\tFound " + eaug.aug.name);
 				}
@@ -119,7 +146,7 @@ public class HJPipelineTestDataGraphBuilder {
 					map2.put(splitted[0], Integer.parseInt(splitted[1]));
 				}
 				
-				System.out.println("\tDone");
+				System.out.println("\tDone with one file");
 	
 				String fileId = "testFile";
 				Map<String, String> labels = new HashMap<>();
@@ -129,9 +156,9 @@ public class HJPipelineTestDataGraphBuilder {
 				}
 	//			
 				LiteralsUtils.isTestTime = true;
-				SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, i, map1, map2, fileId, labels, 1,
-						writer, idMappingWriter);
-				i += eaugs.size();
+				i = SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, i, map1, map2, fileId, labels, 1,
+						"" ,writer, idMappingWriter);
+//				i += eaugs.size();
 
 			}
 		} catch (Exception e) {
@@ -139,6 +166,5 @@ public class HJPipelineTestDataGraphBuilder {
 			throw new RuntimeException(e);
 		}
 		System.out.println("Now it is truly done!");
-
 	}
 }

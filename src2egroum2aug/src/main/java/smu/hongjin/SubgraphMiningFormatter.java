@@ -85,7 +85,7 @@ public class SubgraphMiningFormatter {
 	public static int convert(Collection<EnhancedAUG> eaugs, Class<?> type ,int i, 
 			Map<String, Integer> vertexLabels, Map<String, Integer> edgeLabels, 
 			String fileId,
-			Map<String, String> labels, int quantity,
+			Map<String, String> labels, int quantity, String subIdentifier, 
 			BufferedWriter writer, BufferedWriter idMappingWriter) throws IOException {
 		
 		if (edgeLabels.isEmpty()) {
@@ -114,7 +114,7 @@ public class SubgraphMiningFormatter {
 			
 			writer.write("t " + "# " + i + " " + label + " " + quantity + "\n");
 			if (idMappingWriter != null) {
-				idMappingWriter.write(fileId + "," + i + "," + labelId + "\n");
+				idMappingWriter.write(subIdentifier + fileId + "," + i + "," + labelId + "\n");
 			}
 
 			Map<Node, Integer> vertexNumbers = new HashMap<>();

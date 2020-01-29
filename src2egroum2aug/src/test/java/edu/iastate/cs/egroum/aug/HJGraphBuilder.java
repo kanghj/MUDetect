@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -34,130 +35,140 @@ public class HJGraphBuilder {
 	static int fileCounts = 0;
 
 	public static void buildGraphs() throws IOException {
-		for (Entry<String, String> entry : HJConstants.directoriesToExamplesOfAPI.entrySet()) {
-			System.out.println("running " + entry);
+		for (String API : HJConstants.APIUnderMiner) {
+			Set<String> directories = HJConstants.directoriesToExamplesOfAPI.get(API);
+			System.out.println("running " + API);
 
 			i = 0;
 			fileCounts = 0;
 
-			String API = entry.getKey();
-			String directory = entry.getValue();
-
-			// read the labels
-			Map<String, String> labels = new HashMap<>();
-			GraphBuildingUtils.readLabels(directory, labels);
-
-			// read metadata to know how many copies!
 			Map<String, Integer> quantities = new HashMap<>();
-			GraphBuildingUtils.readCounts(directory, quantities);
 
+			Map<String, String> labels = new HashMap<>();
 			Map<String, Integer> map1 = new HashMap<>();
 			Map<String, Integer> map2 = new HashMap<>();
 
-			// first do an initial pass to count literals
-			try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
-				paths.filter(Files::isRegularFile).forEach(path -> {
-					if (!isExpectedJavaSourceFileFromRightSubdirectory(path)) {
-						return;
-					}
-					try {
-						String code = new String(Files.readAllBytes(path));
-
-						String filePath = path.toFile().toString();
-						CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(code, filePath,
-								filePath.substring(filePath.lastIndexOf("/")), null);
-						cu.accept(new ASTVisitor(false) {
-							@Override
-							public boolean preVisit2(ASTNode node) {
-								if (node.getNodeType() == ASTNode.STRING_LITERAL) {
-									StringLiteral strLiteral = (StringLiteral) node;
-									LiteralsUtils.increaseFreq(strLiteral.getLiteralValue().replaceAll("\n", " "));
-								} else if (node.getNodeType() == ASTNode.NUMBER_LITERAL) {
-									NumberLiteral numLiteral = (NumberLiteral) node;
-									LiteralsUtils.increaseFreq(numLiteral.getToken());
-								}
-
-								return true;
-							}
-						});
-
-					} catch (IOException e) {
-						e.printStackTrace();
-						throw new RuntimeException(e);
-					} catch (NullPointerException npe) {
-						npe.printStackTrace();
-					}
-
-				});
-			}
-
-			System.out.println("done first pass to count literals");
-
-			String APIDirectory =  "./output/" + API + "/";
+			String APIDirectory = "./output/" + API + "/";
 			new File(APIDirectory).mkdirs();
-			try (BufferedWriter writer = new BufferedWriter(new FileWriter(APIDirectory + API + "_formatted.txt"));
-					BufferedWriter idMappingWriter = new BufferedWriter(
-							new FileWriter(APIDirectory + API + "_graph_id_mapping.txt"))) {
+
+			for (String directory : directories) {
+
+				// read the labels
+				GraphBuildingUtils.readLabels(directory, labels);
+
+				// read metadata to know how many copies!
+				GraphBuildingUtils.readCounts(directory, quantities);
 
 				try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
 					paths.filter(Files::isRegularFile).forEach(path -> {
 						if (!isExpectedJavaSourceFileFromRightSubdirectory(path)) {
 							return;
 						}
-
-						System.out.println("path is " + path);
-						fileCounts += 1;
-						if (fileCounts % 100 == 0) {
-							System.out.println("count is " + fileCounts);
-						}
-
-						String after = path.toAbsolutePath().toString().substring(directory.length());
-						String id = after.split("/")[0];
-
-						try {
-							// throw early if id is not integer, which it should be
-							Integer.parseInt(id);
-						} catch (Exception e) {
-							throw new RuntimeException(e);
-						}
-
-						if (!quantities.containsKey(id))
-							throw new RuntimeException("unknown quantity of the graph for ID = " + id);
-						int quantity = quantities.get(id);
-
 						try {
 							String code = new String(Files.readAllBytes(path));
 
 							String filePath = path.toFile().toString();
-							Collection<EnhancedAUG> eaugs = buildAUGsForClassFromSomewhereElse(code, filePath,
-									filePath.substring(filePath.lastIndexOf("/")), new AUGConfiguration() {
-										{
-											usageExamplePredicate = EAUGUsageExamplesOf(
-													GraphBuildingUtils.APIToMethodName.get(API),
-													GraphBuildingUtils.APIToClass.get(API));
-										}
-									});
-							System.out.println("\tDone");
+							CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(code, filePath,
+									filePath.substring(filePath.lastIndexOf("/")), null);
+							cu.accept(new ASTVisitor(false) {
+								@Override
+								public boolean preVisit2(ASTNode node) {
+									if (node.getNodeType() == ASTNode.STRING_LITERAL) {
+										StringLiteral strLiteral = (StringLiteral) node;
+										LiteralsUtils.increaseFreq(strLiteral.getLiteralValue().replaceAll("\n", " "));
+									} else if (node.getNodeType() == ASTNode.NUMBER_LITERAL) {
+										NumberLiteral numLiteral = (NumberLiteral) node;
+										LiteralsUtils.increaseFreq(numLiteral.getToken());
+									}
 
-							String fileId = id;
+									return true;
+								}
+							});
 
-							int oldI = i;
-							i = SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, i, map1, map2, fileId, labels,
-									quantity, writer, idMappingWriter);
+						} catch (IOException e) {
+							e.printStackTrace();
+							throw new RuntimeException(e);
+						} catch (NullPointerException npe) {
+							npe.printStackTrace();
+						}
+
+					});
+				}
+
+				System.out.println("done first pass to count literals");
+
+			}
+
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(APIDirectory + API + "_formatted.txt"));
+					BufferedWriter idMappingWriter = new BufferedWriter(
+							new FileWriter(APIDirectory + API + "_graph_id_mapping.txt"))) {
+				for (String directory : directories) {
+	
+					String[] splitted = directory.split("/");
+					String subIdentifier = splitted[splitted.length - 1];
+
+
+					try (Stream<Path> paths = Files.walk(Paths.get(directory))) {
+						paths.filter(Files::isRegularFile).forEach(path -> {
+							if (!isExpectedJavaSourceFileFromRightSubdirectory(path)) {
+								return;
+							}
+
+							System.out.println("path is " + path);
+							fileCounts += 1;
+							if (fileCounts % 100 == 0) {
+								System.out.println("count is " + fileCounts);
+							}
+
+							String after = path.toAbsolutePath().toString().substring(directory.length());
+							String id = after.split("/")[0];
+
+							try {
+								// throw early if id is not integer, which it should be
+								Integer.parseInt(id);
+							} catch (Exception e) {
+								throw new RuntimeException(e);
+							}
+
+							if (!quantities.containsKey(subIdentifier + id))
+								throw new RuntimeException("unknown quantity of the graph for ID = " + id);
+							int quantity = quantities.get(subIdentifier + id);
+
+							try {
+								String code = new String(Files.readAllBytes(path));
+
+								String filePath = path.toFile().toString();
+								Collection<EnhancedAUG> eaugs = buildAUGsForClassFromSomewhereElse(code, filePath,
+										filePath.substring(filePath.lastIndexOf("/")), new AUGConfiguration() {
+											{
+												usageExamplePredicate = EAUGUsageExamplesOf(
+														GraphBuildingUtils.APIToMethodName.get(API),
+														GraphBuildingUtils.APIToClass.get(API));
+											}
+										});
+								System.out.println("\tDone");
+
+								String fileId = id;
+
+								int oldI = i;
+								i = SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, i, map1, map2, fileId,
+										labels, quantity, subIdentifier, writer, idMappingWriter);
 //							if (i == oldI) {
 //								throw new RuntimeException("'i' should be increased i=" + i);
 //							}
 
-						} catch (NullPointerException npe) {
-							System.out.println("err on " + path);
-							npe.printStackTrace();
-							System.err.println("err on " + path);
-						} catch (Exception e) {
-							System.out.println("err on " + path);
-							throw new RuntimeException(e);
-						}
-					});
+							} catch (NullPointerException npe) {
+								System.out.println("err on " + path);
+								npe.printStackTrace();
+								System.err.println("err on " + path);
+							} catch (Exception e) {
+								System.out.println("err on " + path);
+								throw new RuntimeException(e);
+							}
+						});
+					}
 				}
+
 			}
 			System.out.println("will write to  " + APIDirectory + API + "_formatted.txt");
 			System.out.println("will write to  " + APIDirectory + API + "_vertmap.txt");
