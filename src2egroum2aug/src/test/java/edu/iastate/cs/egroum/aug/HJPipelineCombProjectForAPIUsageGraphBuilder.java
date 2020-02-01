@@ -31,18 +31,38 @@ import smu.hongjin.SubgraphMiningFormatter;
 public class HJPipelineCombProjectForAPIUsageGraphBuilder {
 
 	@Test
-	public void run() throws IOException {
+	public void run1() throws IOException {
+		List<String> projects = Arrays.asList(
+//				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/closure/319/",
+//				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/itext/5091/",
+//				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/lucene/1918/",
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/chensun/cf23b99/"
+				);
+
+		run(projects);
+	}
+	
+	
+	
+//	@Test
+	public void run3() throws IOException {
+		List<String> projects = Arrays.asList(
+		"/Users/kanghongjin/repos/MUBench/mubench-checkouts/bcel/24014e5/",
+		"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jigsaw/205/",
+		"/Users/kanghongjin/repos/MUBench/mubench-checkouts/testng/677302c/");
+		
+		run(projects);
+	}
+	
+	
+	
+	public static void run(List<String> projects) throws IOException {
 		List<String> APIs = Arrays.asList(
-				"java.io.ObjectOutputStream__writeObject__1", 
-				"java.lang.Long__parseLong__1",
-				"java.util.Map__get__1",
-				"java.util.List__get__1", 
-				"java.util.StringTokenizer__nextToken__0", "javax.crypto.Cipher__init__2",
-				"java.io.DataOutputStream__<init>__1", 
-				"java.sql.PreparedStatement__execute*__0",
-				"java.util.Iterator__next__0", 
-				"org.jfree.data.statistics.StatisticalCategoryDataset__getMeanValue__2", 
-				"java.util.Scanner__next__0",
+				"java.io.ObjectOutputStream__writeObject__1", "java.lang.Long__parseLong__1",
+				"java.util.Map__get__1", "java.util.List__get__1", "java.util.StringTokenizer__nextToken__0",
+				"javax.crypto.Cipher__init__2", "java.io.DataOutputStream__<init>__1",
+				"java.sql.PreparedStatement__execute*__0", "java.util.Iterator__next__0",
+				"org.jfree.data.statistics.StatisticalCategoryDataset__getMeanValue__2", "java.util.Scanner__next__0",
 				"com.itextpdf.text.pdf.PdfArray__getPdfObject__1", "java.sql.ResultSet__next__0",
 				"org.apache.lucene.index.SegmentInfos__info__1", "java.lang.Byte__parseByte__1",
 				"java.lang.Short__parseShort__1", "java.util.Enumeration__nextElement__0",
@@ -55,96 +75,110 @@ public class HJPipelineCombProjectForAPIUsageGraphBuilder {
 				"javax.swing.JFrame__setVisible__1", "java.util.Optional__get__0"
 				);
 
-		List<String> projects = Arrays.asList(
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/closure/319/",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/itext/5091/",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/lucene/1918/",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jmrtd/51/",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/1231/",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/asterisk-java/304421c/",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/chensun/cf23b99/",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/bcel/24014e5/",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jigsaw/205/",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/testng/677302c/"
-				);
 		
 		for (String project : projects) {
+			Map<String, BufferedWriter> writers = new HashMap<>();
+			Map<String, BufferedWriter> idMappingWriters = new HashMap<>();
 			for (String API : APIs) {
-				buildGraphs(API, project);
-				
-				
+				String[] splittedPath = project.split("/");
+				String projectName = splittedPath[splittedPath.length - 2];
+//				System.out.println(projectName);
+
+				String outputDirectory = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + projectName
+						+ "___" + API + "/";
+				new File(outputDirectory).mkdirs();
+
+				BufferedWriter writer = new BufferedWriter(
+						new FileWriter(outputDirectory + API + "_combing_test_formatted.txt"));
+				BufferedWriter idMappingWriter = new BufferedWriter(
+						new FileWriter(outputDirectory + API + "_combing_test_graph_id_mapping.txt"));
+
+				writers.put(API, writer);
+				idMappingWriters.put(API, idMappingWriter);
 			}
+
+			buildGraphs(APIs, project, writers, idMappingWriters);
+
 			fileContents.clear();
 			edu.iastate.cs.egroum.utils.JavaASTUtil.astNodeCache.clear();
+
+			for (String API : APIs) {
+				writers.get(API).flush();
+				writers.get(API).close();
+				idMappingWriters.get(API).flush();
+				idMappingWriters.get(API).close();
+			}
+
 		}
 
 	}
-	
+
 	static Map<File, String> fileContents = new HashMap<>();
 
-	public static void buildGraphs(String API, String pathToProject) {
+	public static void buildGraphs(List<String> APIs, String pathToProject, Map<String, BufferedWriter> writers,
+			Map<String, BufferedWriter> idMappingWriters) throws IOException {
 		String pathToProjectFiles = pathToProject + "/checkout/";
 		String pathToClassPath = pathToProject + "dependencies/";
-		
-		String[] splittedPath = pathToProject.split("/");
-		String projectName = splittedPath[splittedPath.length - 2];
-		System.out.println(projectName);
 
-		String outputDirectory = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + projectName  + "___"
-				+ API + "/";
-		String directoryToOriginalLabels = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + API + "/";
+		Map<String, Integer> APICount = new HashMap<>();
+		for (String API : APIs) {
+			APICount.put(API, 0);
+		}
 
-		System.out.println("writing graph IDS to ");
-		System.out.println(outputDirectory + API + "_combing_test_graph_id_mapping.txt");
+		Collection<File> pathsToJavaFiles = FileUtils.listFiles(new File(pathToProjectFiles), new String[] { "java" },
+				true);
 
-		new File(outputDirectory).mkdirs();
-		int i = 0;
-		try (BufferedWriter writer = new BufferedWriter(
-				new FileWriter(outputDirectory + API + "_combing_test_formatted.txt"));
-				BufferedWriter idMappingWriter = new BufferedWriter(
-						new FileWriter(outputDirectory + API + "_combing_test_graph_id_mapping.txt"))) {
+		int fileIndex = 0;
+		int lastFileIndex = pathsToJavaFiles.size();
+		for (File javaFile : pathsToJavaFiles) {
+			System.out.println("\t\t" + fileIndex++ + "/ " + lastFileIndex);
+			String pathToJavaFile = javaFile.toString();
+			String code;
+			if (!fileContents.containsKey(javaFile)) {
+				code = new String(Files.readAllBytes(new File(pathToJavaFile).toPath()));
+			} else {
+				code = fileContents.get(javaFile);
+			}
 
-			Collection<File> pathsToJavaFiles = FileUtils.listFiles(new File(pathToProjectFiles), new String[] {"java"}, true);
-			
-			
-			for (File javaFile : pathsToJavaFiles) {
-				String pathToJavaFile = javaFile.toString();
-				System.out.println("writing to " + outputDirectory + API + "_combing_test_formatted.txt");
-				String code;
-				if (!fileContents.containsKey(javaFile)) {
-					code = new String(Files.readAllBytes(new File(pathToJavaFile).toPath()));
-				} else {
-					code = fileContents.get(javaFile);
+			// get classpath stuff first
+			String[] classpath = null;
+			List<String> result = new ArrayList<>();
+			if (pathToClassPath != null) {
+				try (Stream<Path> walk = Files.walk(Paths.get(pathToClassPath))) {
+
+					result = walk.filter(Files::isRegularFile).map(x -> x.toString()).collect(Collectors.toList());
+
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
+			}
+			String[] splittedPath = pathToProject.split("/");
+			String projectName = splittedPath[splittedPath.length - 2];
 
-				// get classpath stuff first
-				String[] classpath = null;
-				List<String> result = new ArrayList<>();
-				if (pathToClassPath != null) {
-					try (Stream<Path> walk = Files.walk(Paths.get(pathToClassPath))) {
-
-						result = walk.filter(Files::isRegularFile).map(x -> x.toString())
-								.collect(Collectors.toList());
-
-						
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
+			for (String API : APIs) {
+				System.out.println("writing to " + projectName + "___" + API + "_combing_test_formatted.txt");
 
 				String additionalJar = ExtendedAUGTypeUsageExamplePredicate.additionalJar.get(API);
 				if (additionalJar != null) {
 					result.add(additionalJar);
 				}
 				classpath = result.toArray(new String[] {});
-				
+
 				// use text to perform early return.
 				String[] APIsplitted = API.split("__");
 				String textToFind = APIsplitted[1]; // method name
+				String[] nameSplitted = APIsplitted[0].split("\\."); 
+				String textToFind2 = nameSplitted[nameSplitted.length - 1]; // class name
+				String packageName = APIsplitted[0].substring(0, APIsplitted[0].lastIndexOf("."));
 				if (!code.contains(textToFind)) {
 					continue;
 				}
-				
+				if (!packageName.contains("java") || !packageName.contains("java") ) {
+					if (!code.contains(textToFind2)) {
+						continue;
+					}
+				}
+
 				Collection<EnhancedAUG> eaugs = buildAUGsForClassFromSomewhereElse(code, pathToJavaFile,
 						pathToJavaFile.substring(pathToJavaFile.lastIndexOf("/")), new AUGConfiguration() {
 							{
@@ -154,11 +188,17 @@ public class HJPipelineCombProjectForAPIUsageGraphBuilder {
 							}
 						}, classpath);
 
-				if (!eaugs.isEmpty())  {System.out.println("\tFinished building some eaugs!"); } 
-				else {System.out.println("\tNo eaug found.");}
+				if (!eaugs.isEmpty()) {
+					System.out.println("\tFinished building some eaugs!");
+				} else {
+					System.out.println("\tNo eaug found.");
+				}
 				for (EnhancedAUG eaug : eaugs) {
 					System.out.println("\t\tFound " + eaug.aug.name);
 				}
+
+				String directoryToOriginalLabels = "/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/" + API
+						+ "/";
 
 				// read vertmap
 				Map<String, Integer> map1 = new HashMap<>();
@@ -189,14 +229,13 @@ public class HJPipelineCombProjectForAPIUsageGraphBuilder {
 				}
 				//
 				LiteralsUtils.isTestTime = true;
-				i = SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, i, map1, map2, fileId, labels, 1, "",
-						writer, idMappingWriter);
+				int newCount = SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, APICount.get(API), map1, map2, fileId, labels, 1, "",
+						writers.get(API), idMappingWriters.get(API));
 
+				APICount.put(API, newCount);
 			}
-		} catch (Exception e) {
-			System.out.println("err!! .. " + API + " at " + pathToProject);
-			throw new RuntimeException(e);
 		}
+
 		System.out.println("Now it is truly done!");
 	}
 }

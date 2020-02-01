@@ -395,6 +395,7 @@ public class EGroumBuilder {
 		for (MethodDeclaration method : type.getMethods()) {
 			if (configuration.usageExamplePredicate.matches(method)) {
 				typeMatches = true;
+				break;
 			}
 		}
 
@@ -410,8 +411,9 @@ public class EGroumBuilder {
 				
 				
 				EGroumGraph g = buildGroum(method, path, prefix + type.getName().getIdentifier() + ".");
-				if (configuration.usageExamplePredicate.matches(g))
+				if (configuration.usageExamplePredicate.matches(g)) {
 					groums.add(g);
+				}
 			}
 
 		if (typeMatches) {	// we want all the fields
@@ -444,23 +446,46 @@ public class EGroumBuilder {
 		return groums;
 	}
 
+	public static Map<String, EGroumGraph> cache = new HashMap<>();
+	
 	EGroumGraph buildGroum(MethodDeclaration method, String filepath, String name) {
-		String sig = JavaASTUtil.buildSignature(method);
-		System.out.println("EGroumBuilder buildGroum:" + filepath + " " + name + sig);
-		EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false), configuration);
-		g.setFilePath(filepath);
-		g.setName(name + sig);
-		return g;
+		String identifier = method.toString() + filepath + name;
+		if (cache.containsKey(identifier)) {
+			return cache.get(identifier);
+		} else {
+			if (cache.size() > 10) {
+				cache.clear();
+			}
+		
+			String sig = JavaASTUtil.buildSignature(method);
+			System.out.println("EGroumBuilder buildGroum:" + filepath + " " + name + sig);
+			EGroumGraph g = new EGroumGraph(method, new EGroumBuildingContext(false), configuration);
+			g.setFilePath(filepath);
+			g.setName(name + sig);
+			
+			cache.put(identifier, g);
+			return g;
+		}
 	}
 	
 	EGroumGraph buildGroum(VariableDeclarationFragment fragment, String filepath, String name) {
 		String sig = fragment.getName().getIdentifier() + "#" + "__FieldOfClass__";
+		String identifier = sig + filepath + name;
+		if (cache.containsKey(identifier)) {
+			return cache.get(identifier);
+		} else {
+			if (cache.size() > 10) {
+				cache.clear();
+			}
 		
-		System.out.println("EGroumBuilder buildGroum for fragment:" + filepath + " " + name + sig);
-		//fragment.getInitializer()
-		EGroumGraph g = new EGroumGraph(fragment, new EGroumBuildingContext(false), configuration);
-		g.setFilePath(filepath);
-		g.setName(name + sig);
-		return g;
+			System.out.println("EGroumBuilder buildGroum for fragment:" + filepath + " " + name + sig);
+			//fragment.getInitializer()
+			EGroumGraph g = new EGroumGraph(fragment, new EGroumBuildingContext(false), configuration);
+			g.setFilePath(filepath);
+			g.setName(name + sig);
+			
+			cache.put(sig, g);
+			return g;
+		}
 	}
 }

@@ -32,7 +32,7 @@ public class HJPipelineTestDataGraphBuilder {
 
 //		String API = "java.io.ObjectOutputStream__writeObject__1";
 //		String API = "java.lang.Long__parseLong__1";
-		String API = "java.util.Map__get__1";
+//		String API = "java.util.Map__get__1";
 //		String API = "java.util.List__get__1";
 //		String API = "java.sql.PreparedStatement__executeUpdate__0";
 //		String API = "java.util.StringTokenizer__nextToken__0";
@@ -47,7 +47,7 @@ public class HJPipelineTestDataGraphBuilder {
 //		String API = "java.util.Scanner__next__0";
 //		String API = "com.itextpdf.text.pdf.PdfArray__getPdfObject__1";
 //		String API = "java.sql.ResultSet__next__0";
-//		String API ="org.apache.lucene.index.SegmentInfos__info__1";
+		String API ="org.apache.lucene.index.SegmentInfos__info__1";
 //		String API ="java.lang.Byte__parseByte__1";
 //		String API ="java.lang.Short__parseShort__1";
 //		String API ="java.util.Enumeration__nextElement__0";

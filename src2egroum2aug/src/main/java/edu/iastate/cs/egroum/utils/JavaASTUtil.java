@@ -102,6 +102,8 @@ public class JavaASTUtil {
 			return astNodeCache.get(identifier);
 		} else {
 		
+			astNodeCache.clear(); // only one item in astNodeCache at any time
+			
 			Map options = JavaCore.getOptions();
 			options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
 			options.put(JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM, JavaCore.VERSION_1_8);
@@ -119,7 +121,7 @@ public class JavaASTUtil {
 			parser.setSource(source.toCharArray());
 	    	parser.setUnitName(name);
 			ASTNode result = parser.createAST(null);
-//			astNodeCache.put(identifier, result);
+			astNodeCache.put(identifier, result);
 			 
 			return result;
 		}

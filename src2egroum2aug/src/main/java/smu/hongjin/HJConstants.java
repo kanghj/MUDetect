@@ -14,7 +14,7 @@ public class HJConstants {
 
 	public static final String examplesRoot = "/Users/kanghongjin/Downloads/github-code-search/";
 	
-	public static List<String> APIUnderMiner = Arrays.asList("com.google.common.collect.Multimap__get__1");
+	public static List<String> APIUnderMiner = Arrays.asList("org.apache.lucene.index.SegmentInfos__info__1");
 
 	static {
 //		directoriesToExamplesOfAPI.put("java.util.StringTokenizer__nextToken__0",

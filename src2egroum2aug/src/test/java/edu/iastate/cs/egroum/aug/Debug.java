@@ -97,7 +97,8 @@ public class Debug {
 	private Path path() {
 //		return Paths.get("/Users/kanghongjin//Downloads/github-code-search/java.util.Map__get__1_true/files/10225.UnmodifiableCaseInsensitiveDictionaryMap.java");
 //		return Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/asterisk-java/41461b4/checkout/src/main/java/org/asteriskjava/manager/event/RtcpReceivedEvent.java");
-		return Paths.get("/Users/kanghongjin/Downloads/github-code-search/javax.crypto.Cipher__init__2_true/9204/com/thinkgem/jeesite/common/utils/DesUtils.java.txt");
+//		return Paths.get("/Users/kanghongjin/Downloads/github-code-search/javax.crypto.Cipher__init__2_true/9204/com/thinkgem/jeesite/common/utils/DesUtils.java.txt");
+		return Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/closure/319/checkout/src/com/google/javascript/jscomp/ReplaceMessages.java");
 	}
 
     private Collection<EGroumGraph> buildEGroumsForClasses(String[] sources) {
