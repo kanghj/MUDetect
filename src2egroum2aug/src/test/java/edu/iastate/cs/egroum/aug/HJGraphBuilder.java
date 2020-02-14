@@ -36,6 +36,7 @@ public class HJGraphBuilder {
 
 	public static void buildGraphs() throws IOException {
 		for (String API : HJConstants.APIUnderMiner) {
+			System.out.println("Building graphs for " + API);
 			Set<String> directories = HJConstants.directoriesToExamplesOfAPI.get(API);
 			System.out.println("running " + API);
 

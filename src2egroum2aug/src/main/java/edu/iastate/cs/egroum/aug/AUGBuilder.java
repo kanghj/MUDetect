@@ -93,6 +93,8 @@ public class AUGBuilder {
     }
     
     private APIUsageExample toAUG(String source, String basePath, String projectName, String[] classpath, EGroumGraph groum) {
+    	
+    	String typeName = groum.getName().split("\\.")[0];
     	APIUsageExample aug = toAUG(groum);
     	
     	CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(source, basePath, projectName, classpath);
@@ -100,6 +102,11 @@ public class AUGBuilder {
     	for (int i = 0; i < cu.types().size(); i++)
 			if (cu.types().get(i) instanceof TypeDeclaration) {
 				TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
+				
+				if (!typ.getName().toString().contains(typeName)) {
+					continue;
+				}
+				
 				List interfaces = (List) typ.superInterfaceTypes();
 				for (Object interfaceObj : interfaces) {
 					if (interfaceObj instanceof SimpleType) {
@@ -225,12 +232,12 @@ public class AUGBuilder {
                 return;
             } else if (node.astNodeType == ASTNode.FIELD_ACCESS) {
             	// HJ TODO: not all field accesses are constants!
-            	// HJ: maybe heuristically use capital letter naming
+            	// HJ: heuristically use capital letter in names to detect this
             	
             	if (hasNoLowerCase(dataName)) {
             		builder.withConstant(nodeId, dataType, dataName, dataValue);
             	} else {
-            		builder.withVariable(nodeId, dataType, dataName);
+            		builder.withVariable(nodeId, "this." + dataType, dataName);
             	}
                 
                 builder.fieldsUsed.put(dataName, nodeId);

@@ -49,6 +49,12 @@
             <artifactId>bcel-findbugs</artifactId>
             <version>6.0</version>
         </dependency>
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>2.6</version>
+		</dependency>
+        
 
         <!-- ### Testing ################################################## -->
         <dependency>

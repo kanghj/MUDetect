@@ -47,10 +47,10 @@ public class HJPipelineTestDataGraphBuilder {
 //		String API = "java.util.Scanner__next__0";
 //		String API = "com.itextpdf.text.pdf.PdfArray__getPdfObject__1";
 //		String API = "java.sql.ResultSet__next__0";
-		String API ="org.apache.lucene.index.SegmentInfos__info__1";
+//		String API ="org.apache.lucene.index.SegmentInfos__info__1";
 //		String API ="java.lang.Byte__parseByte__1";
 //		String API ="java.lang.Short__parseShort__1";
-//		String API ="java.util.Enumeration__nextElement__0";
+		String API ="java.util.Enumeration__nextElement__0";
 //		String API = "org.jfree.chart.plot.XYPlot__getRendererForDataset__1";
 //		String API = "org.jfree.chart.plot.PlotRenderingInfo__getOwner__0";
 		

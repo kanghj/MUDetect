@@ -50,8 +50,8 @@ public class Debug {
 				new AUGConfiguration() {
 					{
 						usageExamplePredicate = EAUGUsageExamplesOf(
-								"init",
-								"javax.crypto.Cipher");
+								"nextElement",
+								"java.util.Enumeration");
 					}
 				});
         
@@ -98,7 +98,9 @@ public class Debug {
 //		return Paths.get("/Users/kanghongjin//Downloads/github-code-search/java.util.Map__get__1_true/files/10225.UnmodifiableCaseInsensitiveDictionaryMap.java");
 //		return Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/asterisk-java/41461b4/checkout/src/main/java/org/asteriskjava/manager/event/RtcpReceivedEvent.java");
 //		return Paths.get("/Users/kanghongjin/Downloads/github-code-search/javax.crypto.Cipher__init__2_true/9204/com/thinkgem/jeesite/common/utils/DesUtils.java.txt");
-		return Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/closure/319/checkout/src/com/google/javascript/jscomp/ReplaceMessages.java");
+//		return Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/closure/319/checkout/src/com/google/javascript/jscomp/ReplaceMessages.java");
+		
+		return Paths.get("/Users/kanghongjin/repos/MUBench/mubench-checkouts/jigsaw/205/checkout/Jigsaw/src/classes/org/w3c/jigsaw/servlet/JigsawHttpServletRequest.java");
 	}
 
     private Collection<EGroumGraph> buildEGroumsForClasses(String[] sources) {

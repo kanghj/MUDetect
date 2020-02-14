@@ -155,13 +155,13 @@ public class HJRegressionTestConstants {
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jfreechart/881//checkout/source/org/jfree/chart/plot/CategoryPlot.java",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/lucene/754/checkout//src/java/org/apache/lucene/search/FieldCacheImpl.java",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/synthetic_directives/jsl/checkout/src/mubench/examples/directives/Unsynchronized.java",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/synthetic_survey/jsl/checkout/src/mubench/examples/survey/Maps.java",
-				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/14640/javaapplication193/SequenceReconstruction.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/8368/com/puzzle/SortMapByValue.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/12190/myWorld/utils/Zpl_test.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/17064/sds/chemicalexport/workers/CsvExport.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/11906/com/yfy/crr/Analyser.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/3362/edu/usc/ini/igc/ENIGMA/ml/MDD/J_SiteDictionary.java.txt"
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/synthetic_survey/jsl/checkout/src/mubench/examples/survey/Maps.java"
+//				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/14640/javaapplication193/SequenceReconstruction.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/8368/com/puzzle/SortMapByValue.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/12190/myWorld/utils/Zpl_test.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/17064/sds/chemicalexport/workers/CsvExport.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/11906/com/yfy/crr/Analyser.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.util.Map__get__1_true/3362/edu/usc/ini/igc/ENIGMA/ml/MDD/J_SiteDictionary.java.txt"
 
 		);
 		pathsToClassPath = Arrays.asList("/Users/kanghongjin/repos/MUBench/mubench-checkouts/closure/319/dependencies",
@@ -169,10 +169,8 @@ public class HJRegressionTestConstants {
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jfreechart/881/dependencies",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/lucene/754/dependencies", 
 				
-				null, null,
-				
-				null, null, null, null,
-				null, null);
+				null, null
+				);
 
 		javaFilesForApi.put("java.util.Map__get__1", pathsToJavaFiles);
 		javaClassPathForApi.put("java.util.Map__get__1", pathsToClassPath);

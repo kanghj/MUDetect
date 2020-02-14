@@ -154,6 +154,8 @@ public class HJFilesPreprocessor {
 								for (int i = 0; i < cu.types().size(); i++) {
 									if (cu.types().get(i) instanceof TypeDeclaration) {
 										TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
+										
+//										typ.getTypes();
 
 										for (MethodDeclaration md : typ.getMethods()) {
 											if (!GraphBuildingUtils.APIToMethodName.containsKey(API)
@@ -163,7 +165,7 @@ public class HJFilesPreprocessor {
 											}
 											if (!EAUGUsageExamplesOf(GraphBuildingUtils.APIToMethodName.get(API),
 													GraphBuildingUtils.APIToClass.get(API)).matches(md)) {
-//											System.out.println("\tno match " + md.getName());
+											System.out.println("\tno match " + typ.getName() + "#" + md.getName());
 												continue;
 											}
 
@@ -172,7 +174,7 @@ public class HJFilesPreprocessor {
 												continue;
 											}
 
-											boolean isClone = isCloneOfPrevious(filePath, md);
+											boolean isClone = checkIfCloneOfPreviousAndUpdatePaths(filePath, md);
 
 											String sig = JavaASTUtil.buildSignature(md);
 											if (isClone) {
@@ -216,6 +218,7 @@ public class HJFilesPreprocessor {
 
 							} catch (IOException e) {
 								e.printStackTrace();
+								System.out.println("Unable to parse java file due ot io exception");
 								throw new RuntimeException(e);
 							} catch (IllegalStateException ise) {
 								ise.printStackTrace();
@@ -272,7 +275,7 @@ public class HJFilesPreprocessor {
 		return count > new AUGConfiguration().maxStatements;
 	}
 
-	private static boolean isCloneOfPrevious(String path, MethodDeclaration md) {
+	private static boolean checkIfCloneOfPreviousAndUpdatePaths(String path, MethodDeclaration md) {
 
 		Set<String> tokens = new HashSet<>();
 

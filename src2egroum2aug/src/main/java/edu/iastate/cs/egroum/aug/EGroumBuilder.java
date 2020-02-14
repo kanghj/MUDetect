@@ -324,14 +324,18 @@ public class EGroumBuilder {
 		for (int i = 0; i < files.size(); i++) {
 			paths[i] = files.get(i).getAbsolutePath();
 		}
+		System.out.println("numPaths : " + paths.length + " , dir = " + dir.getPath());
 		HashMap<String, CompilationUnit> cus = new HashMap<>();
+		Set<String> inspected = new HashSet<>();
 		FileASTRequestor r = new FileASTRequestor() {
 			@Override
 			public void acceptAST(String sourceFilePath, CompilationUnit cu) {
+				inspected.add(sourceFilePath);
 				if (configuration.usageExamplePredicate.matches(sourceFilePath, cu))
 					cus.put(sourceFilePath, cu);
 			}
 		};
+		
 		@SuppressWarnings("rawtypes")
 		Map options = JavaCore.getOptions();
 		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
@@ -350,6 +354,7 @@ public class EGroumBuilder {
 				if (cu.types().get(i) instanceof TypeDeclaration)
 					groums.addAll(buildGroums((TypeDeclaration) cu.types().get(i), path, ""));
 		}
+		System.out.println("numInspected : " + inspected.size());
 		for (EGroumGraph groum : groums) {
 			groum.setProjectName(dir.getAbsolutePath());
 		}
