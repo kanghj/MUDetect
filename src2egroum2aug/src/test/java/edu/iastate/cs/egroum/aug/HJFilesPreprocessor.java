@@ -155,34 +155,9 @@ public class HJFilesPreprocessor {
 									if (cu.types().get(i) instanceof TypeDeclaration) {
 										TypeDeclaration typ = (TypeDeclaration) cu.types().get(i);
 										
-//										typ.getTypes();
 
-										for (MethodDeclaration md : typ.getMethods()) {
-											if (!GraphBuildingUtils.APIToMethodName.containsKey(API)
-													|| !GraphBuildingUtils.APIToClass.containsKey(API)) {
-												throw new RuntimeException(
-														"GraphBuildingUtils does not have the necessary information");
-											}
-											if (!EAUGUsageExamplesOf(GraphBuildingUtils.APIToMethodName.get(API),
-													GraphBuildingUtils.APIToClass.get(API)).matches(md)) {
-											System.out.println("\tno match " + typ.getName() + "#" + md.getName());
-												continue;
-											}
-
-											if (isTooBig(md)) {
-												System.out.println("\ttoo big");
-												continue;
-											}
-
-											boolean isClone = checkIfCloneOfPreviousAndUpdatePaths(filePath, md);
-
-											String sig = JavaASTUtil.buildSignature(md);
-											if (isClone) {
-												clones.add(id + " - " + typ.getName().getIdentifier() + "." + sig);
-											} else {
-												uniq.add(id + " - " + typ.getName().getIdentifier() + "." + sig);
-											}
-										}
+										handleOneTypeDeclaration(API, id, filePath, uniq, clones, typ);
+										
 									}
 								}
 								for (String item : uniq) {
@@ -256,6 +231,40 @@ public class HJFilesPreprocessor {
 				System.out.println("It's time to start labeling. Fill in " + directory + "labels.csv");
 
 			}
+		}
+	}
+
+	private static void handleOneTypeDeclaration(String API, String id, String filePath, Set<String> uniq,
+			Set<String> clones, TypeDeclaration typ) {
+		for (MethodDeclaration md : typ.getMethods()) {
+			if (!GraphBuildingUtils.APIToMethodName.containsKey(API)
+					|| !GraphBuildingUtils.APIToClass.containsKey(API)) {
+				throw new RuntimeException(
+						"GraphBuildingUtils does not have the necessary information");
+			}
+			if (!EAUGUsageExamplesOf(GraphBuildingUtils.APIToMethodName.get(API),
+					GraphBuildingUtils.APIToClass.get(API)).matches(md)) {
+			System.out.println("\tno match " + typ.getName() + "#" + md.getName());
+				continue;
+			}
+
+			if (isTooBig(md)) {
+				System.out.println("\ttoo big");
+				continue;
+			}
+
+			boolean isClone = checkIfCloneOfPreviousAndUpdatePaths(filePath, md);
+
+			String sig = JavaASTUtil.buildSignature(md);
+			if (isClone) {
+				clones.add(id + " - " + typ.getName().getIdentifier() + "." + sig);
+			} else {
+				uniq.add(id + " - " + typ.getName().getIdentifier() + "." + sig);
+			}
+		}
+		
+		for (TypeDeclaration innerTyp : typ.getTypes()) {
+			handleOneTypeDeclaration(API, id, filePath, uniq, clones, innerTyp);
 		}
 	}
 

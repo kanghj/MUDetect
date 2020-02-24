@@ -49,9 +49,11 @@ public class HJPipelineCombOtherProjectForAPIUsageGraphBuilder {
 //				"/Users/kanghongjin/repos_for_misuses/jfreechart/",
 //				"/Users/kanghongjin/repos_for_misuses/pdfbox/",
 //				"/Users/kanghongjin/repos_for_misuses/santuario-java/",
-				"/Users/kanghongjin/repos_for_misuses/swingx/",
-				"/Users/kanghongjin/repos_for_misuses/wildfly-elytron/",
-				"/Users/kanghongjin/repos_for_misuses/xmlgraphics-fop/"
+//				"/Users/kanghongjin/repos_for_misuses/swingx/",
+//				"/Users/kanghongjin/repos_for_misuses/wildfly-elytron/",
+//				"/Users/kanghongjin/repos_for_misuses/xmlgraphics-fop/"
+//				"/Users/kanghongjin/repos_for_misuses/commons-lang/",
+				"/Users/kanghongjin/repos_for_misuses/bigtop/"
 				);
 
 		run(projects);
@@ -132,6 +134,8 @@ public class HJPipelineCombOtherProjectForAPIUsageGraphBuilder {
 		String pathToProjectFiles = pathToProject + "";
 //		List<String> classPathDirectories = Arrays.asList("dependencies", "target");
 
+		int failedToParse = 0;
+		int numberOfFilesParsedSucc = 0;
 		Map<String, Integer> APICount = new HashMap<>();
 		for (String API : APIs) {
 			APICount.put(API, 0);
@@ -172,7 +176,11 @@ public class HJPipelineCombOtherProjectForAPIUsageGraphBuilder {
 				if (additionalJar != null) {
 					result.add(additionalJar);
 				}
-				classpath = result.toArray(new String[] {});
+				if (result.isEmpty()) {
+					classpath = null;
+				} else {
+					classpath = result.toArray(new String[] {});
+				}
 
 				// use text to perform early return.
 				String[] APIsplitted = API.split("__");
@@ -183,13 +191,18 @@ public class HJPipelineCombOtherProjectForAPIUsageGraphBuilder {
 				if (!code.contains(textToFind)) {
 					continue;
 				}
-				if (!packageName.contains("java") || !packageName.contains("java") ) {
+				if (!packageName.contains("java") ) {
 					if (!code.contains(textToFind2)) {
 						continue;
 					}
 				}
 
-				Collection<EnhancedAUG> eaugs = buildAUGsForClassFromSomewhereElse(code, pathToJavaFile,
+//				System.out.println("classpath");
+//				System.out.println(Arrays.toString(classpath));
+				
+				Collection<EnhancedAUG> eaugs;
+				try {
+					eaugs = buildAUGsForClassFromSomewhereElse(code, pathToJavaFile,
 						pathToJavaFile.substring(pathToJavaFile.lastIndexOf("/")), new AUGConfiguration() {
 							{
 								usageExamplePredicate = EAUGUsageExamplesOf(GraphBuildingUtils.APIToMethodName.get(API),
@@ -197,7 +210,16 @@ public class HJPipelineCombOtherProjectForAPIUsageGraphBuilder {
 								maxStatements = 500;
 							}
 						}, classpath);
+				} catch (IllegalStateException ise) {
+					
+					failedToParse++;
+					
+					System.out.println("Sometimes the parsing fails somehow. No idea why.");
+					ise.printStackTrace();
+					continue;
+				}
 
+				numberOfFilesParsedSucc+=1;
 				if (!eaugs.isEmpty()) {
 					System.out.println("\tFinished building some eaugs!");
 				} else {
@@ -246,6 +268,7 @@ public class HJPipelineCombOtherProjectForAPIUsageGraphBuilder {
 			}
 		}
 
-		System.out.println("Now it is truly done!");
+		System.out.println("Now it is truly done! failed to parse=" + failedToParse);
+		System.out.println("\t\t\t numberOfFilesParsedSucc=" + numberOfFilesParsedSucc);
 	}
 }

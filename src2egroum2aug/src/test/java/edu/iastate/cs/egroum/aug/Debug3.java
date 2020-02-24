@@ -72,28 +72,32 @@ public class Debug3 {
 //    			"	}\n" + 
 //    			"\n" + 
 //    			"}";
-    	String code = "" + 
-    			"import java.io.File;\n" + 
-    			"import java.io.PrintWriter;\n" + 
-    			"\n" + 
-    			"public class Scratch {\n" + 
-    			"\n" + 
-    			"	public static void main() {\n" + 
-    			"		File f = new File(\"hello_world\"); \n" + 
-    			"		try (PrintWriter pw = new PrintWriter(f)) {\n" + 
-    			"			\n" + 
-    			"			int i = hello();\n" + 
-    			"		} catch(Exception e) {\n" + 
-    			"			\n" + 
-    			"			\n" + 
-    			"		} finally {\n" + 
-    			"			System.out.println(\"hello world\");\n" + 
-    			"		}\n" + 
-    			"			\n" + 
-    			"	}\n" + 
-    			"	\n" + 
-    			"}";
+//    	String code = "" + 
+//    			"import java.io.File;\n" + 
+//    			"import java.io.PrintWriter;\n" + 
+//    			"\n" + 
+//    			"public class Scratch {\n" + 
+//    			"\n" + 
+//    			"	public static void main() {\n" + 
+//    			"		File f = new File(\"hello_world\"); \n" + 
+//    			"		try (PrintWriter pw = new PrintWriter(f)) {\n" + 
+//    			"			\n" + 
+//    			"			int i = hello();\n" + 
+//    			"		} catch(Exception e) {\n" + 
+//    			"			\n" + 
+//    			"			\n" + 
+//    			"		} finally {\n" + 
+//    			"			System.out.println(\"hello world\");\n" + 
+//    			"		}\n" + 
+//    			"			\n" + 
+//    			"	}\n" + 
+//    			"	\n" + 
+//    			"}";
 
+    	String code ="V existing = delegate.get(key);\n" + 
+    			"if(existing != null) {\n" + 
+    			"    return existing;\n" + 
+    			"}";
         LiteralsUtils.isTestTime = true;
         ArrayList<APIUsageExample> augs = buildAUGsForClasses(new String[]{code});
         exportAUGsAsPNG(augs, "./output/", "Debug-aug");

@@ -97,7 +97,7 @@ public class JavaASTUtil {
 
 	@SuppressWarnings("rawtypes")
 	public static ASTNode parseSource(String source, String path, String name, String[] classpaths) {
-		String identifier = source + "__" + path + "__" + name + "___" + classpaths;
+		String identifier = path + "__" + name + "___" + classpaths;
 		if (astNodeCache.containsKey(identifier)) {
 			return astNodeCache.get(identifier);
 		} else {

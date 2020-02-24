@@ -70,7 +70,7 @@ public class ReconstructSubgraphWithLabels {
 //		String APIunderTest = "java.io.DataOutputStream__<init>__1";
 //		String APIunderTest = "java.util.List__get__1";
 //		String APIunderTest = "java.lang.Long__parseLong__1";
-		String APIunderTest = "java.lang.Short__parseShort__1";
+//		String APIunderTest = "java.lang.Short__parseShort__1";
 //		String APIunderTest = "org.jfree.data.statistics.StatisticalCategoryDataset__getMeanValue__2";
 //		String APIunderTest = "java.util.Scanner__next__0";	
 //		String APIunderTest = "com.itextpdf.text.pdf.PdfArray__getPdfObject__1";
@@ -78,7 +78,7 @@ public class ReconstructSubgraphWithLabels {
 //		String APIunderTest = "java.util.StringTokenizer__nextToken__0";
 //		String APIunderTest = "org.apache.lucene.index.SegmentInfos__info__1";
 //		String APIunderTest = "java.lang.Byte__parseByte__1";
-//		String APIunderTest = "java.util.Map__get__1";
+		String APIunderTest = "java.util.Map__get__1";
 //		String APIunderTest = "java.util.Enumeration__nextElement__0";
 //		String APIunderTest = "org.jfree.chart.plot.XYPlot__getRendererForDataset__1";
 //		String APIunderTest = "org.jfree.chart.plot.PlotRenderingInfo__getOwner__0";
