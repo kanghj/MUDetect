@@ -4,11 +4,12 @@ import java.io.IOException;
 
 import org.junit.Test;
 
+import smu.hongjin.HJConstants;
+
 /**
  * A convenience script, disguised as a test, that exists just to run the graph builder.
+ * Configure things in HJConstants.APIUnderMiner in HJConstants.java.
  * 
- * 
- * @author kanghongjin
  *
  */
 public class HJPipelineGraphBuilderTest {

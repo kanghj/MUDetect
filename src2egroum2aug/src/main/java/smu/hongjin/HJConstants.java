@@ -14,7 +14,15 @@ public class HJConstants {
 
 	public static final String examplesRoot = "/Users/kanghongjin/Downloads/github-code-search/";
 	
-	public static List<String> APIUnderMiner = Arrays.asList("org.jfree.chart.plot.PlotRenderingInfo__getOwner__0");
+	public static List<String> APIUnderMiner = Arrays.asList(//"java.awt.Shape__getPathIterator__1"
+//			"org.jfree.chart.plot.XYPlot__getRendererForDataset__1"
+			"javax.crypto.spec.SecretKeySpec__<init>__2"
+			);
+	// java.awt.Shape__getPathIterator__1
+	
+	// org.jfree.chart.plot.XYPlot__getRendererForDataset__1
+	// avax.crypto.spec.SecretKeySpec__<init>__2
+	// java.lang.String__<init>__2
 
 	static {
 //		directoriesToExamplesOfAPI.put("java.util.StringTokenizer__nextToken__0",
@@ -186,6 +194,38 @@ public class HJConstants {
 				Collections.singleton(
 				examplesRoot +	"com.google.common.collect.Multimap__get__1_true/"));
 		
+		
+		
+		directoriesToExamplesOfAPI.put("org.apache.commons.lang.text.StrBuilder__getNullText__0",
+				Collections.singleton(
+				examplesRoot +	"org.apache.commons.lang.text.StrBuilder__getNullText__0_true/"));
+
+		directoriesToExamplesOfAPI.put("org.apache.commons.math3.geometry.euclidean.threed.Line__intersection__1",
+				Collections.singleton(
+				examplesRoot +	"org.apache.commons.math3.geometry.euclidean.threed.Line__intersection__1_true/"));
+		
+		directoriesToExamplesOfAPI.put("org.apache.commons.math3.geometry.euclidean.twod.Line__intersection__1",
+				Collections.singleton(
+				examplesRoot +	"org.apache.commons.math3.geometry.euclidean.twod.Line__intersection__1_true/"));
+		
+		directoriesToExamplesOfAPI.put("javax.crypto.spec.SecretKeySpec__<init>__2",
+				Collections.singleton(
+				examplesRoot +	"javax.crypto.spec.SecretKeySpec__<init>__2_true/"));
+		
+		directoriesToExamplesOfAPI.put("java.lang.String__charAt__1",
+				Collections.singleton(
+				examplesRoot +	"java.lang.String__charAt__1_true/"));
+		
+//		directoriesToExamplesOfAPI.put("java.lang.String__<init>__2",
+//				Collections.singleton(
+//				examplesRoot +	"java.lang.String__<init>__2[doFinal]_true/"));
+		
+		directoriesToExamplesOfAPI.put("java.awt.Shape__getPathIterator__1",
+				Collections.singleton(
+				examplesRoot +	"java.awt.Shape__getPathIterator__1_true/"));
+		directoriesToExamplesOfAPI.put("org.jfree.chart.plot.XYPlot__getRendererForDataset__1",
+				Collections.singleton(
+				examplesRoot +	"org.jfree.chart.plot.XYPlot__getRendererForDataset__1_true/"));
 		
 		
 //		assert directoriesToExamplesOfAPI.size() == GraphBuildingUtils.APIToClass.size();

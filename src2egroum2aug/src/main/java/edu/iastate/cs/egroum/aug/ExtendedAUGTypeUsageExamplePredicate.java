@@ -39,6 +39,7 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 		relaxMatchingCriteria.put("getDataset", true);
 		relaxMatchingCriteria.put("isPreemptive", true);
 		relaxMatchingCriteria.put("getParameter", true);
+//		relaxMatchingCriteria.put("intersection", true);
 
 	}
 	
@@ -75,11 +76,13 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 
 	@Override
 	public boolean matches(String sourceFilePath, CompilationUnit cu) {
+		containing = false;
 		return matches(cu);
 	}
 
 	@Override
 	public boolean matches(MethodDeclaration methodDeclaration) {
+		containing = false;
 		return matches((ASTNode) methodDeclaration);
 	}
 
@@ -91,7 +94,7 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 
 		if (relaxMatchingCriteria.entrySet().stream()
 				.anyMatch(nameWhichCanRelax -> methodNames.contains(nameWhichCanRelax.getKey()))) {
-			containing = false;
+			containing = containing || false;
 			// a less strict visitor
 			node.accept(new ASTVisitor(false) {
 				@Override
@@ -116,7 +119,7 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 			});
 			
 		} else {
-			containing = false;
+			containing = containing || false;
 			node.accept(new ASTVisitor(false) {
 				@Override
 				public boolean visit(MethodInvocation node) {

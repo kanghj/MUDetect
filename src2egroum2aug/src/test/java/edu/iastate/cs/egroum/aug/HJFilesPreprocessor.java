@@ -118,6 +118,10 @@ public class HJFilesPreprocessor {
 								System.out.println("Skipping : " + path + ", which contains /files");
 								return;
 							}
+							if (path.toString().contains("/cocci_files/")) {
+								System.out.println("Skipping : " + path + ", which contains /cocci_files");
+								return;
+							}
 							if (!path.toString().endsWith(".java.txt")) {
 
 								System.out.println("Skipping : " + path

@@ -131,8 +131,10 @@ public class HJGraphBuilder {
 								throw new RuntimeException(e);
 							}
 
-							if (!quantities.containsKey(subIdentifier + id))
-								throw new RuntimeException("unknown quantity of the graph for ID = " + id);
+							if (!quantities.containsKey(subIdentifier + id)) {
+//								throw new RuntimeException("unknown quantity of the graph for ID = " + id);
+								return;
+							}
 							int quantity = quantities.get(subIdentifier + id);
 
 							try {
@@ -194,6 +196,10 @@ public class HJGraphBuilder {
 		}
 		if (path.toString().contains("/files/")) {
 			System.out.println("Skipping : " + path + ", which contains /files");
+			return false;
+		}
+		if (path.toString().contains("/cocci_files/")) {
+			System.out.println("Skipping : " + path + ", which contains /cocci_files");
 			return false;
 		}
 		if (!path.toString().endsWith(".java.txt")) {

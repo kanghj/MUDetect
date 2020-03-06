@@ -41,7 +41,9 @@ public class GraphBuildingUtils {
 		
 		APIToClass.put("java.util.Scanner__next__0", "java.util.Iterator"); // a scanner is really just an iterator.
 		APIToClass.put("java.io.PrintWriter__write__1", "java.io.Writer"); //
-		APIToClass.put("javax.swing.JFrame__setVisible__1", "java.awt.Window"); // 
+		APIToClass.put("javax.swing.JFrame__setVisible__1", "java.awt.Window"); //
+		APIToClass.put("java.lang.String__charAt__1", "java.lang.CharSequence"); 
+//		CharSequence
 		// In fact, the `next` method simply comes from iterator. Without special handling, we can't match against scanner next correctly. 
 		
 	}
