@@ -65,8 +65,8 @@ public class ReconstructSubgraphWithLabels {
 //		String APIunderTest = "java.sql.PreparedStatement__execute*__0";
 		
 //		String APIunderTest = "java.util.Iterator__next__0";
-//		String APIunderTest = "javax.crypto.Cipher__init__2";
-		String APIunderTest = "java.io.ObjectOutputStream__writeObject__1";
+		String APIunderTest = "javax.crypto.Cipher__init__2";
+//		String APIunderTest = "java.io.ObjectOutputStream__writeObject__1";
 //		String APIunderTest = "java.io.DataOutputStream__<init>__1";
 //		String APIunderTest = "java.util.List__get__1";
 //		String APIunderTest = "java.lang.Long__parseLong__1";

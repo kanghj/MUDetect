@@ -1,6 +1,6 @@
-package edu.iastate.cs.egroum.aug;
+package smu.hongjin;
 
-import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClassFromSomewhereElse;
+import static smu.hongjin.EAUGUtils.buildAUGsForClassFromSomewhereElse;
 import static edu.iastate.cs.egroum.aug.ExtendedAUGTypeUsageExamplePredicate.EAUGUsageExamplesOf;
 
 import java.io.BufferedWriter;
@@ -23,12 +23,10 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NumberLiteral;
 import org.eclipse.jdt.core.dom.StringLiteral;
 
+import edu.iastate.cs.egroum.aug.AUGConfiguration;
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
 import smu.hongjin.EnhancedAUG;
-import smu.hongjin.GraphBuildingUtils;
-import smu.hongjin.HJConstants;
 import smu.hongjin.LiteralsUtils;
-import smu.hongjin.SubgraphMiningFormatter;
 
 public class HJGraphBuilder {
 	private static int i;

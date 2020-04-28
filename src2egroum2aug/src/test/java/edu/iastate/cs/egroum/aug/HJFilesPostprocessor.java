@@ -26,8 +26,10 @@ import org.junit.Test;
 import com.google.common.collect.Sets;
 
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
+import smu.hongjin.EAUGUtils;
 import smu.hongjin.GraphBuildingUtils;
 import smu.hongjin.HJConstants;
+import smu.hongjin.HJGraphBuilder;
 
 /**
  * After mining significant subgraphs, it is likely that there are more graphs
@@ -128,7 +130,7 @@ public class HJFilesPostprocessor {
 										if (!hasMstachingMethodName) continue;
 										
 
-										if (HJFilesPreprocessor.isTooBig(md)) {
+										if (EAUGUtils.isTooBig(md)) {
 											continue;
 										}
 

@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import smu.hongjin.HJConstants;
+import smu.hongjin.HJGraphBuilder;
+import smu.hongjin.HJPreprocessor;
 
 public class GraphMiningRunner {
 
@@ -15,7 +17,7 @@ public class GraphMiningRunner {
 		
 		HJConstants.APIUnderMiner = Arrays.asList(args[1]); 
 		if (args[0].equals("preprocess")) {
-			HJFilesPreprocessor.preprocess();
+			HJPreprocessor.preprocess();
 		} else if (args[0].equals("mine")) {
 			HJGraphBuilder.buildGraphs();
 		} else if (args[0].equals("buildTestGraphs")) {

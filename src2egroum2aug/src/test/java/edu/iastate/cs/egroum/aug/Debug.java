@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import static de.tu_darmstadt.stg.mudetect.aug.AUGTestUtils.exportAUGsAsPNG;
-import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClassFromSomewhereElse;
+import static smu.hongjin.EAUGUtils.buildAUGsForClassFromSomewhereElse;
 import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClasses;
 import static edu.iastate.cs.egroum.aug.ExtendedAUGTypeUsageExamplePredicate.EAUGUsageExamplesOf;
 

@@ -35,9 +35,9 @@ public class ReconstructSubgraph {
 
 
 		convert("Map",
-		"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1_vertmap.txt",
-		"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1_edgemap.txt",
-		"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1_formatted_result"
+		"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1/java.util.Map__get__1_vertmap.txt",
+		"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1/java.util.Map__get__1_edgemap.txt",
+		"/Users/kanghongjin/repos/MUDetect/src2egroum2aug/output/java.util.Map__get__1/java.util.Map__get__1_formatted_result"
 		);
 
 

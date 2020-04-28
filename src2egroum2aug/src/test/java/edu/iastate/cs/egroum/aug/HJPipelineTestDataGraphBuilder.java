@@ -1,6 +1,6 @@
 package edu.iastate.cs.egroum.aug;
 
-import static edu.iastate.cs.egroum.aug.AUGBuilderTestUtils.buildAUGsForClassFromSomewhereElse;
+import static smu.hongjin.EAUGUtils.buildAUGsForClassFromSomewhereElse;
 import static edu.iastate.cs.egroum.aug.ExtendedAUGTypeUsageExamplePredicate.EAUGUsageExamplesOf;
 
 import java.io.BufferedWriter;
@@ -154,11 +154,10 @@ public class HJPipelineTestDataGraphBuilder {
 					String labelId = fileId + " - " + eaug.aug.name;
 					labels.put(labelId, "U");
 				}
-	//			
+		
 				LiteralsUtils.isTestTime = true;
 				i = SubgraphMiningFormatter.convert(eaugs, EnhancedAUG.class, i, map1, map2, fileId, labels, 1,
 						"" ,writer, idMappingWriter);
-//				i += eaugs.size();
 
 			}
 		} catch (Exception e) {
