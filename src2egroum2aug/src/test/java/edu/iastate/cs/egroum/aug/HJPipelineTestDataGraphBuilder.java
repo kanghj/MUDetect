@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,7 +33,32 @@ public class HJPipelineTestDataGraphBuilder {
 
 //		String API = "java.io.ObjectOutputStream__writeObject__1";
 //		String API = "java.lang.Long__parseLong__1";
-//		String API = "java.util.Map__get__1";
+		List<String> APIs = Arrays.asList(
+//				"java.util.Map"
+				
+//				"java.util.StringTokenizer"
+//				""
+//				"java.util.List"
+//				"java.io.ObjectOutputStream"
+				"java.lang.Long"
+//				"java.util.List__get__1"
+				
+//				"java.sql.ResultSet__next__0",
+//				"java.io.ObjectOutputStream__writeObject__1"
+//				"java.lang.Long__parseLong__1",
+//				"java.util.Enumeration__nextElement__0",
+//				"java.util.Iterator__next__0"
+//				"org.apache.lucene.index.SegmentInfos__info__1"
+				);
+		List<String> APILongNames = Arrays.asList(
+//				"java.util.Map__get__1"
+//				"java.util.StringTokenizer__nextToken__0"
+//				"java.util.List__get__1"
+//				"java.io.ObjectOutputStream__writeObject__1"
+				"java.lang.Long__parseLong__1"
+				);
+		
+				
 //		String API = "java.util.List__get__1";
 //		String API = "java.sql.PreparedStatement__executeUpdate__0";
 //		String API = "java.util.StringTokenizer__nextToken__0";
@@ -50,7 +76,7 @@ public class HJPipelineTestDataGraphBuilder {
 //		String API ="org.apache.lucene.index.SegmentInfos__info__1";
 //		String API ="java.lang.Byte__parseByte__1";
 //		String API ="java.lang.Short__parseShort__1";
-		String API ="java.util.Enumeration__nextElement__0";
+//		String API ="java.util.Enumeration__nextElement__0";
 //		String API = "org.jfree.chart.plot.XYPlot__getRendererForDataset__1";
 //		String API = "org.jfree.chart.plot.PlotRenderingInfo__getOwner__0";
 		
@@ -65,13 +91,18 @@ public class HJPipelineTestDataGraphBuilder {
 //		String API = "javax.swing.JFrame__setVisible__1";
 //		String API = "java.util.Optional__get__0";
 		
-		buildGraphs(API);
+		int i = 0;
+		for (String API: APIs) {
+			String longName = APILongNames.get(i++); 
+			buildGraphs(API, longName);
+		}
+		
 
 	}
 
-	public static void buildGraphs(String API) {
-		List<String> pathsToJavaFiles = HJRegressionTestConstants.javaFilesForApi.get(API);
-		List<String> pathsToClassPath = HJRegressionTestConstants.javaClassPathForApi.get(API);
+	public static void buildGraphs(String API, String APILongName) {
+		List<String> pathsToJavaFiles = HJRegressionTestConstants.javaFilesForApi.get(APILongName);
+		List<String> pathsToClassPath = HJRegressionTestConstants.javaClassPathForApi.get(APILongName);
 		
 		if (pathsToJavaFiles.size() != pathsToClassPath.size()) {
 			throw new RuntimeException("wrong size");
@@ -113,8 +144,8 @@ public class HJPipelineTestDataGraphBuilder {
 						new AUGConfiguration() {
 							{
 								usageExamplePredicate = EAUGUsageExamplesOf(
-										GraphBuildingUtils.APIToMethodName.get(API),
-										GraphBuildingUtils.APIToClass.get(API));
+										GraphBuildingUtils.APIToMethodName.get(APILongName),
+										GraphBuildingUtils.APIToClass.get(APILongName));
 								maxStatements = 500;
 							}
 						},
@@ -132,6 +163,7 @@ public class HJPipelineTestDataGraphBuilder {
 				List<String> lines = Files.readAllLines(Paths.get(vertMapDirectory));
 				for (String line : lines) {
 					int lastIndex = line.lastIndexOf(",");
+					System.out.println(line);
 					String token = line.substring(0, lastIndex);
 					String countAsStr = line.substring(lastIndex + 1);
 					map1.put(token, Integer.parseInt(countAsStr));

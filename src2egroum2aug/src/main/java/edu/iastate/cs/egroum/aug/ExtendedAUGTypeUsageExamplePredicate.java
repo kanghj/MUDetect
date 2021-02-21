@@ -30,6 +30,9 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 	static {
 		// for names that are more identifiable, we don't have to check the types
 		// strictly.
+		//in some cases, we add it here because it's too annoying to gry to match things from third party libraries otherwise
+		
+		// it's usually ok, because we match against source  code which was already filtered using the github-code-search tool 
 		relaxMatchingCriteria.put("getMeanValue", true);
 		relaxMatchingCriteria.put("getPdfObject", true);
 		relaxMatchingCriteria.put("info", true);
@@ -39,6 +42,8 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 		relaxMatchingCriteria.put("getDataset", true);
 		relaxMatchingCriteria.put("isPreemptive", true);
 		relaxMatchingCriteria.put("getParameter", true);
+		
+		relaxMatchingCriteria.put("open", true);
 //		relaxMatchingCriteria.put("intersection", true);
 
 	}
@@ -74,6 +79,8 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 		this.isCtor = methodNames.stream().anyMatch(name -> name.contains("init>"));
 	}
 
+	
+	private static boolean debug = false;
 	@Override
 	public boolean matches(String sourceFilePath, CompilationUnit cu) {
 		containing = false;
@@ -83,6 +90,12 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 	@Override
 	public boolean matches(MethodDeclaration methodDeclaration) {
 		containing = false;
+		if (methodDeclaration.getName().toString().equals("writeObject")) {
+			System.out.println("debug time!");
+			debug = true;
+		} else {
+			debug = false;
+		}
 		return matches((ASTNode) methodDeclaration);
 	}
 
@@ -92,8 +105,35 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 		if (matchesAnyExample())
 			return true;
 
+		if (debug) {
+			System.out.println("is relaxed matching? " + ((relaxMatchingCriteria.entrySet().stream()
+				.anyMatch(nameWhichCanRelax -> methodNames.contains(nameWhichCanRelax.getKey())))
+					|| EGroumBuilder.USE_FALLBACK));
+			node.accept(new ASTVisitor(false) {
+				@Override
+				public boolean visit(MethodInvocation node) {
+					return !isDeclaredByApiClass(node.getName(), false) && super.visit(node);
+				}
+				
+				private boolean isDeclaredByApiClass(SimpleName name, boolean b) {
+					
+					System.out.println("name found during parse = " + name.toString() + " vs names expected=" + methodNames + " is match?" + (methodNames.contains(name.toString())));
+					
+					return false;
+				}
+
+
+				@Override
+				public boolean preVisit2(ASTNode node) {
+					return !containing && super.preVisit2(node);
+				}
+			});
+		}
+		
 		if (relaxMatchingCriteria.entrySet().stream()
-				.anyMatch(nameWhichCanRelax -> methodNames.contains(nameWhichCanRelax.getKey()))) {
+				.anyMatch(nameWhichCanRelax -> methodNames.contains(nameWhichCanRelax.getKey()))
+				|| EGroumBuilder.USE_FALLBACK) { // USE_FALLBACK: it makes sense to use a relaxed matching: the graph label wil be missing anyway, even if matchin spuriously, which will cause the spurious matches to be filtered
+			
 			containing = containing || false;
 			// a less strict visitor
 			node.accept(new ASTVisitor(false) {
@@ -106,6 +146,9 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 					
 					if (methodNames.contains(name.toString())) {
 						containing = true;
+						if (debug) {
+							System.out.println("===\tSet `containing` to true!");
+						}
 						return true;
 					}
 					return false;
@@ -138,7 +181,7 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 
 				// check is naive and too dumb...
 				private boolean isDeclaredByApiClass(IMethodBinding mb, boolean isCtor2) {
-					if (isCtor2 && isCtor) {
+					if (isCtor2 && isCtor && !EGroumBuilder.USE_FALLBACK) {
 						containing = true;
 						return true;
 					}
@@ -193,7 +236,8 @@ public class ExtendedAUGTypeUsageExamplePredicate implements UsageExamplePredica
 	@Override
 	public boolean matches(EGroumGraph graph) {
 		if (relaxMatchingCriteria.entrySet().stream()
-				.anyMatch(nameWhichCanRelax -> methodNames.contains(nameWhichCanRelax.getKey()))) {
+				.anyMatch(nameWhichCanRelax -> methodNames.contains(nameWhichCanRelax.getKey()))
+				|| EGroumBuilder.USE_FALLBACK) {
 			return true;
 		}
 		return matchesAnyExample() || !Collections.disjoint(graph.getAPIs(), simpleTypeNames);

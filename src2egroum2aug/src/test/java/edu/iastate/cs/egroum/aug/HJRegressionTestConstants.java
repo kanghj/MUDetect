@@ -40,7 +40,7 @@ public class HJRegressionTestConstants {
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/TestMutablePeriod_Basics.java",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/TestPartial_Basics.java",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/TestPeriodType.java",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/TestPeriodType.java",
+//				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/TestPeriodType.java",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/TestPeriod_Basics.java",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/TestSeconds.java",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/TestTimeOfDay_Basics.java",
@@ -53,19 +53,19 @@ public class HJRegressionTestConstants {
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/field/TestScaledDurationField.java",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/tz/TestCachedDateTimeZone.java",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/test/java/org/joda/time/TestDateMidnight_Basics.java",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/main/java/org/joda/time/tz/DateTimeZoneBuilder.java",
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/checkout/src/main/java/org/joda/time/tz/DateTimeZoneBuilder.java"
 				
 //				// correct uses
-				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/21924/com/selfimpr/storagedemo/StorageUtil.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/10755/com/slfuture/carrie/world/logic/Result.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/1518/esutdal/javanotes/cache/util/DefaultSerializer.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/10156/org/votingsystem/util/ObjectUtils.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/21924/com/selfimpr/storagedemo/StorageUtil.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/10755/com/slfuture/carrie/world/logic/Result.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/1518/esutdal/javanotes/cache/util/DefaultSerializer.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/10156/org/votingsystem/util/ObjectUtils.java.txt",
 ////				
 //				// misuses
-				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/1839/com/flowingsun/common/utils/SerializeUtils.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/100/org/sumanta/util/Serializer.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/1004/com/jdon/util/ObjectStreamUtil.java.txt",
-				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/10117/com/huateng/ebank/business/print/servlet/PrintServlet.java.txt"
+//				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/1839/com/flowingsun/common/utils/SerializeUtils.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/100/org/sumanta/util/Serializer.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/1004/com/jdon/util/ObjectStreamUtil.java.txt",
+//				"/Users/kanghongjin/Downloads/github-code-search/java.io.ObjectOutputStream__writeObject__1[ByteArrayOutputStream]_true/10117/com/huateng/ebank/business/print/servlet/PrintServlet.java.txt"
 //				
 				);
 		List<String> pathsToClassPath = Arrays.asList(
@@ -98,16 +98,16 @@ public class HJRegressionTestConstants {
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
+//				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
 				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
-				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies",
-				
-				null, null, null, null, null, null, 
-				null, null
+				"/Users/kanghongjin/repos/MUBench/mubench-checkouts/jodatime/cc35fb2/dependencies"
+//				
+//				null, null, null, null, null, null, 
+//				null, null
 				);
 		javaFilesForApi.put("java.io.ObjectOutputStream__writeObject__1", pathsToJavaFiles);
 		javaClassPathForApi.put("java.io.ObjectOutputStream__writeObject__1", pathsToClassPath);

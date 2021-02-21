@@ -38,68 +38,58 @@ public class HJPipelineCombOtherProjectForAPIUsageGraphBuilder {
 	@Test
 	public void run1() throws IOException {
 		List<String> projects = Arrays.asList(
-				"/Users/kanghongjin/repos_for_misuses/commons-bcel/",
-				"/Users/kanghongjin/repos_for_misuses/commons-math/",
-				"/Users/kanghongjin/repos_for_misuses/commons-text/",
-				"/Users/kanghongjin/repos_for_misuses/curator/",
-				"/Users/kanghongjin/repos_for_misuses/directory-fortress-core/",
-				"/Users/kanghongjin/repos_for_misuses/h2database/",
+
+				
 				"/Users/kanghongjin/repos_for_misuses/itextpdf/",
-				"/Users/kanghongjin/repos_for_misuses/jackrabbit/",
-				"/Users/kanghongjin/repos_for_misuses/jfreechart/",
-				"/Users/kanghongjin/repos_for_misuses/pdfbox/",
-				"/Users/kanghongjin/repos_for_misuses/santuario-java/",
-				"/Users/kanghongjin/repos_for_misuses/swingx/",
-				"/Users/kanghongjin/repos_for_misuses/wildfly-elytron/",
-				"/Users/kanghongjin/repos_for_misuses/xmlgraphics-fop/",
-				"/Users/kanghongjin/repos_for_misuses/commons-lang/",
-				"/Users/kanghongjin/repos_for_misuses/bigtop/"
+				"/Users/kanghongjin/repos_for_misuses/jackrabbit/"
+				
 				);
 
 		run(projects);
 	}
 	
+
 	
 
 	
 	
 	public static void run(List<String> projects) throws IOException {
 		List<String> APIs = Arrays.asList(
-				"java.io.ObjectOutputStream__writeObject__1", 
-				"java.lang.Long__parseLong__1",
+//				"java.io.ObjectOutputStream__writeObject__1",
+//				"java.lang.Long__parseLong__1",
 				"java.util.Map__get__1", 
 				"java.util.List__get__1", 
-				"java.util.StringTokenizer__nextToken__0",
-				"javax.crypto.Cipher__init__2", 
-				"java.io.DataOutputStream__<init>__1",
-				"java.sql.PreparedStatement__execute*__0", 
-				"java.util.Iterator__next__0",
-				"org.jfree.data.statistics.StatisticalCategoryDataset__getMeanValue__2", 
-				"java.util.Scanner__next__0",
-				"com.itextpdf.text.pdf.PdfArray__getPdfObject__1", 
-				"java.sql.ResultSet__next__0",
-				"org.apache.lucene.index.SegmentInfos__info__1", 
-				"java.lang.Byte__parseByte__1",
-				"java.lang.Short__parseShort__1", 
-				"java.util.Enumeration__nextElement__0",
-				"org.jfree.chart.plot.XYPlot__getRendererForDataset__1",
-				"org.jfree.chart.plot.PlotRenderingInfo__getOwner__0",
-				"org.jfree.chart.plot.CategoryPlot__getDataset__1",
-				"com.itextpdf.text.pdf.PdfDictionary__getAsString__1", 
-				"java.nio.ByteBuffer__put__1",
-				"java.util.SortedMap__firstKey__0", 
-				"org.kohsuke.args4j.spi.Parameters__getParameter__1",
-				"java.nio.channels.FileChannel__write__1", 
-				"java.io.PrintWriter__write__1",
-				"javax.swing.JFrame__setVisible__1", 
-				"java.util.Optional__get__0",
-				"org.apache.commons.lang.text.StrBuilder__getNullText__0",
-				"org.apache.commons.math3.geometry.euclidean.threed.Line__intersection__1",
-				"org.apache.commons.math3.geometry.euclidean.twod.Line__intersection__1",
-				"javax.crypto.spec.SecretKeySpec__<init>__2",
-				"java.lang.String__charAt__1",
-				"java.awt.Shape__getPathIterator__1",
-				"org.jfree.chart.plot.XYPlot__getRendererForDataset__1"
+//				"java.util.StringTokenizer__nextToken__0",
+//				"javax.crypto.Cipher__init__2", // can rid 
+//				"java.io.DataOutputStream__<init>__1",
+//				"java.sql.PreparedStatement__execute*__0", 
+				"java.util.Iterator__next__0"
+//				"org.jfree.data.statistics.StatisticalCategoryDataset__getMeanValue__2", // can rid 
+//				"java.util.Scanner__next__0", // can rid
+//				"com.itextpdf.text.pdf.PdfArray__getPdfObject__1", 
+//				"java.sql.ResultSet__next__0",
+//				"org.apache.lucene.index.SegmentInfos__info__1", 
+//				"java.lang.Byte__parseByte__1",
+//				"java.lang.Short__parseShort__1", 
+//				"java.util.Enumeration__nextElement__0",
+//				"org.jfree.chart.plot.XYPlot__getRendererForDataset__1",
+//				"org.jfree.chart.plot.PlotRenderingInfo__getOwner__0",
+//				"org.jfree.chart.plot.CategoryPlot__getDataset__1", // can rid
+//				"com.itextpdf.text.pdf.PdfDictionary__getAsString__1", 
+//				"java.nio.ByteBuffer__put__1", // can rid
+//				"java.util.SortedMap__firstKey__0", // can rid 
+//				"org.kohsuke.args4j.spi.Parameters__getParameter__1", // can rid
+//				"java.nio.channels.FileChannel__write__1", // can rid 
+//				"java.io.PrintWriter__write__1",
+//				"javax.swing.JFrame__setVisible__1", 
+//				"java.util.Optional__get__0", // can rid
+//				"org.apache.commons.lang.text.StrBuilder__getNullText__0", // can rid
+//				"org.apache.commons.math3.geometry.euclidean.threed.Line__intersection__1", // can rid
+//				"org.apache.commons.math3.geometry.euclidean.twod.Line__intersection__1", // can rid
+//				"javax.crypto.spec.SecretKeySpec__<init>__2", // can rid
+//				"java.lang.String__charAt__1"
+//				"java.awt.Shape__getPathIterator__1", // can rid
+//				"org.jfree.chart.plot.XYPlot__getRendererForDataset__1" // can rid
 				);
 
 		
@@ -130,9 +120,9 @@ public class HJPipelineCombOtherProjectForAPIUsageGraphBuilder {
 			edu.iastate.cs.egroum.utils.JavaASTUtil.astNodeCache.clear();
 
 			for (String API : APIs) {
-				writers.get(API).flush();
+//				writers.get(API).flush();
 				writers.get(API).close();
-				idMappingWriters.get(API).flush();
+//				idMappingWriters.get(API).flush();
 				idMappingWriters.get(API).close();
 			}
 

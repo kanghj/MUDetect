@@ -16,7 +16,19 @@ public class HJConstants {
 	
 	public static List<String> APIUnderMiner = Arrays.asList(//"java.awt.Shape__getPathIterator__1"
 //			"org.jfree.chart.plot.XYPlot__getRendererForDataset__1"
-			"javax.crypto.spec.SecretKeySpec__<init>__2"
+//			"javax.crypto.spec.SecretKeySpec__<init>__2"
+//			"javax.crypto.Cipher__init__2"
+//			"java.util.Iterator__next__0"
+//			"java.lang.StringBuilder__append__1"
+			"org.apache.commons.httpclient.HttpConnection__open__0",
+//			"java.util.Enumeration__nextElement__0",
+//			"java.util.List__get__1"
+//			"java.util.Map__get__1"
+//			"java.sql.ResultSet__next__0",
+//			"java.io.ObjectOutputStream__writeObject__1",
+//			"java.lang.Long__parseLong__1"
+//			"java.sql.PreparedStatement__execute*__0"
+			"java.io.RandomAccessFile__close__0"
 			);
 	// java.awt.Shape__getPathIterator__1
 	
@@ -226,6 +238,19 @@ public class HJConstants {
 		directoriesToExamplesOfAPI.put("org.jfree.chart.plot.XYPlot__getRendererForDataset__1",
 				Collections.singleton(
 				examplesRoot +	"org.jfree.chart.plot.XYPlot__getRendererForDataset__1_true/"));
+		
+		
+		
+		directoriesToExamplesOfAPI.put("java.lang.StringBuilder__append__1",
+				Collections.singleton(
+				examplesRoot +	"java.lang.StringBuilder__append__1_true/"));
+		
+		directoriesToExamplesOfAPI.put("org.apache.commons.httpclient.HttpConnection__open__0",
+				Collections.singleton(
+				examplesRoot +	"org.apache.commons.httpclient.HttpConnection__open__0_true/"));
+		directoriesToExamplesOfAPI.put("java.io.RandomAccessFile__close__0",
+				Collections.singleton(
+				examplesRoot +	"java.io.RandomAccessFile__close__0_true/"));
 		
 		
 //		assert directoriesToExamplesOfAPI.size() == GraphBuildingUtils.APIToClass.size();

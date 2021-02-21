@@ -122,8 +122,9 @@ public class GraphBuildingUtils {
 			} else {
 				label = splitted[1];
 			}
-
-			labels.put(location, label);
+			if (!labels.containsKey(location) || labels.get(location).equals("U")) {
+				labels.put(location, label);
+			}
 		}
 	}
 

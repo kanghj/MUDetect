@@ -24,6 +24,7 @@ public class EAUGUtils {
         AUGBuilder builder = new AUGBuilder(configuration);
         String basePath = elseWhere;
         Collection<APIUsageExample> aug = builder.build(classCode, basePath, project, null);
+        System.out.println(" converting AUG to EAUG. #augs = " + aug.size());
         return EnhancedAUG.buildEnhancedAugs(new HashSet<>(aug));
     }
     

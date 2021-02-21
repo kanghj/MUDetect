@@ -48,6 +48,7 @@ public class HJFilesPreprocessor {
 
 	@Test
 	public void debug() throws FileNotFoundException, IOException {
+		System.out.println(HJConstants.APIUnderMiner);
 		HJPreprocessor.preprocess();
 	}
 

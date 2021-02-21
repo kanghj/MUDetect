@@ -2,6 +2,8 @@ package edu.iastate.cs.egroum.aug;
 
 import edu.iastate.cs.egroum.dot.DotGraph;
 import edu.iastate.cs.egroum.utils.JavaASTUtil;
+import smu.hongjin.SubgraphMiningFormatter;
+
 import org.eclipse.jdt.core.dom.*;
 import org.eclipse.jdt.core.dom.InfixExpression.Operator;
 
@@ -890,7 +892,14 @@ public class EGroumGraph implements Serializable {
 	
 	private EGroumGraph buildPDG(EGroumNode control, String branch, SingleVariableDeclaration astNode, boolean isMethodParam) {
 		SimpleName name = astNode.getName();
-		String type = isMethodParam ? "param:" + JavaASTUtil.getSimpleType(astNode.getType()) : JavaASTUtil.getSimpleType(astNode.getType());
+		
+		String type;
+		if (SubgraphMiningFormatter.TURN_OFF_EXTENSIONS){ 
+			type = JavaASTUtil.getSimpleType(astNode.getType());
+		} else {
+			type = isMethodParam ? "param:" + JavaASTUtil.getSimpleType(astNode.getType()) : JavaASTUtil.getSimpleType(astNode.getType());
+		}
+		
 		for (int i = 0; i < astNode.getExtraDimensions(); i++)
 			type += "[]";
 		context.addLocalVariable(name.getIdentifier(), "" + name.getStartPosition(), type);

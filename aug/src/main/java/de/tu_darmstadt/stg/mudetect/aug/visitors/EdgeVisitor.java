@@ -2,6 +2,7 @@ package de.tu_darmstadt.stg.mudetect.aug.visitors;
 
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ImplementsEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.QualifierEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
@@ -21,4 +22,6 @@ public interface EdgeVisitor<R> {
     R visit(ParameterEdge edge);
     R visit(QualifierEdge edge);
     R visit(ReceiverEdge edge);
+    
+    R visit(ImplementsEdge edge);
 }

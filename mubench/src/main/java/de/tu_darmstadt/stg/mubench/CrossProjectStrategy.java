@@ -37,7 +37,7 @@ class CrossProjectStrategy implements DetectionStrategy {
         output.withRunInfo("numberOfTargets", targets.size());
 //        System.out.println("numberOfTargets = " + targets.size());
         if (targets.isEmpty()) {
-        	System.out.println("args are = " + args.getTargetSrcPaths());
+        	System.out.println("args are = " + Arrays.toString(args.getTargetSrcPaths()));
         	throw new RuntimeException("no targets found. ");
         }
 

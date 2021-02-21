@@ -19,9 +19,10 @@ public class GraphMiningRunner {
 		if (args[0].equals("preprocess")) {
 			HJPreprocessor.preprocess();
 		} else if (args[0].equals("mine")) {
+			
 			HJGraphBuilder.buildGraphs();
 		} else if (args[0].equals("buildTestGraphs")) {
-			HJPipelineTestDataGraphBuilder.buildGraphs(args[1]);
+//			HJPipelineTestDataGraphBuilder.buildGraphs(args[1]);
 		} else if (args[0].equals("postprocess")) {
 			HJFilesPostprocessor.postprocess();
 		}

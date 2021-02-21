@@ -4,6 +4,7 @@ import de.tu_darmstadt.stg.mudetect.aug.model.actions.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.controlflow.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.data.*;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.DefinitionEdge;
+import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ImplementsEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ParameterEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.QualifierEdge;
 import de.tu_darmstadt.stg.mudetect.aug.model.dataflow.ReceiverEdge;
@@ -72,6 +73,11 @@ public class DelegateAUGVisitor<R> implements AUGElementVisitor<R> {
 
     @Override
     public R visit(ReceiverEdge edge) {
+        return delegate.visit(edge);
+    }
+    
+    @Override
+    public R visit(ImplementsEdge edge) {
         return delegate.visit(edge);
     }
 

@@ -63,12 +63,13 @@ public class ReconstructSubgraphWithLabels {
 		Map<Integer, Float> bestSubgraphs = new HashMap<>();
 
 //		String APIunderTest = "java.sql.PreparedStatement__execute*__0";
-		
+//		
 //		String APIunderTest = "java.util.Iterator__next__0";
-		String APIunderTest = "javax.crypto.Cipher__init__2";
+//		String APIunderTest = "javax.crypto.Cipher__init__2";
 //		String APIunderTest = "java.io.ObjectOutputStream__writeObject__1";
 //		String APIunderTest = "java.io.DataOutputStream__<init>__1";
 //		String APIunderTest = "java.util.List__get__1";
+//		String APIunderTest = "java.lang.StringBuilder__append__1";
 //		String APIunderTest = "java.lang.Long__parseLong__1";
 //		String APIunderTest = "java.lang.Short__parseShort__1";
 //		String APIunderTest = "org.jfree.data.statistics.StatisticalCategoryDataset__getMeanValue__2";
@@ -91,6 +92,12 @@ public class ReconstructSubgraphWithLabels {
 //		String APIunderTest = "java.io.PrintWriter__write__1";
 //		String APIunderTest = "javax.swing.JFrame__setVisible__1";
 //		String APIunderTest = "java.util.Optional__get__0";
+		
+		// MUDTXP
+//		String APIunderTest = "java.util.Map";
+//		String APIunderTest = "java.util.StringTokenizer";
+//		String APIunderTest = "java.io.ObjectOutputStream";
+		String APIunderTest = "java.lang.Long";
 		
 		
 		if (APIunderTest.endsWith("true")) {

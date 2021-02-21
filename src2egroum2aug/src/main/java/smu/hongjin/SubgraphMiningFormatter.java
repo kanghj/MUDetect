@@ -21,6 +21,9 @@ import de.tu_darmstadt.stg.mudetect.aug.visitors.BaseAUGLabelProvider;
  *
  */
 public class SubgraphMiningFormatter {
+	
+	public static final boolean TURN_OFF_EXTENSIONS = false; // used for FSE rebutal. Answers "Do the extensions really help quantitatively?".
+	// remmeber to look in LiteralUtils as well, when adjusting this value
 
 //	public static void convert(Collection<APIUsageExample> augs, int i, Map<String, Integer> vertexLabels, Map<String, Integer> edgeLabels, BufferedWriter writer) throws IOException {
 //		// along the way,
@@ -106,8 +109,17 @@ public class SubgraphMiningFormatter {
 			String labelId = fileId + " - " + eaug.aug.name;
 			String label = labels.get(labelId);
 			if (label == null) {
-				System.out.println("omitted due to missing label");
-				continue;
+				
+				// HJ: ad-hoc heuristics to deal with bad file processing
+				String possibleClazz = labelId.split(" - ")[1];
+				int afterFirstDot = possibleClazz.indexOf(".");
+				String classAfterFirstDot = possibleClazz.substring(afterFirstDot + 1);
+				String newIdToTry = labelId.split(" - ")[0] + " - " + classAfterFirstDot; 
+				label = labels.get(newIdToTry);
+				if (label == null) {
+					System.out.println("omitted due to missing label of labelId=" + labelId + " and (as ad-hoc backup) " + newIdToTry);
+					continue;
+				}
 			}
 //			if (label == null) throw new RuntimeException("missing label!");
 			
@@ -123,57 +135,63 @@ public class SubgraphMiningFormatter {
 			nodeNumber = writeNodesInAug(vertexLabels, writer, aug, vertexNumbers, nodeNumber);
 			
 			Map<Node, Node> equivalentNodeToJoinPoint = new HashMap<>();
-			for (APIUsageGraph relAug : eaug.related) {
-				Node nodeToJoinAt = eaug.relatedJoinPoint.get(relAug);
+			if (!TURN_OFF_EXTENSIONS) { 
 				
-				// iterate through current API usage graph to find same node
-				Node equivalentNode = null;
-				for (Node node : relAug.vertexSet()) {
-					if (node instanceof ConstantNode && nodeToJoinAt instanceof ConstantNode) {
-						ConstantNode constantNode = (ConstantNode) node;
-						ConstantNode constantNodeToJointAt =(ConstantNode) nodeToJoinAt;
-						
-						if (constantNode.getName().equals(constantNodeToJointAt.getName())) {
-							equivalentNode = constantNode;
-							equivalentNodeToJoinPoint.put(equivalentNode, constantNodeToJointAt);
+				for (APIUsageGraph relAug : eaug.related) {
+					Node nodeToJoinAt = eaug.relatedJoinPoint.get(relAug);
+					
+					// iterate through current API usage graph to find same node
+					Node equivalentNode = null;
+					for (Node node : relAug.vertexSet()) {
+						if (node instanceof ConstantNode && nodeToJoinAt instanceof ConstantNode) {
+							ConstantNode constantNode = (ConstantNode) node;
+							ConstantNode constantNodeToJointAt =(ConstantNode) nodeToJoinAt;
+							
+							if (constantNode.getName().equals(constantNodeToJointAt.getName())) {
+								equivalentNode = constantNode;
+								equivalentNodeToJoinPoint.put(equivalentNode, constantNodeToJointAt);
+							}
+						}
+						else if (node instanceof 	VariableNode && nodeToJoinAt instanceof VariableNode) {
+							VariableNode variableNode = (VariableNode) node;
+							VariableNode variableNodeAtJoinAt = (VariableNode) nodeToJoinAt;
+							
+							if (variableNode.getName().equals(variableNodeAtJoinAt.getName())) {
+								equivalentNode = variableNode;
+								equivalentNodeToJoinPoint.put(equivalentNode, variableNodeAtJoinAt);
+							}
+						} else {
+							continue;
 						}
 					}
-					else if (node instanceof 	VariableNode && nodeToJoinAt instanceof VariableNode) {
-						VariableNode variableNode = (VariableNode) node;
-						VariableNode variableNodeAtJoinAt = (VariableNode) nodeToJoinAt;
-						
-						if (variableNode.getName().equals(variableNodeAtJoinAt.getName())) {
-							equivalentNode = variableNode;
-							equivalentNodeToJoinPoint.put(equivalentNode, variableNodeAtJoinAt);
-						}
-					} else {
-						continue;
-					}
+					
+					// write nodes of related graph
+					nodeNumber = writeNodesInAug(vertexLabels, writer, relAug, vertexNumbers, nodeNumber, equivalentNode, nodeToJoinAt);				
 				}
-				
-				// write nodes of related graph
-				nodeNumber = writeNodesInAug(vertexLabels, writer, relAug, vertexNumbers, nodeNumber, equivalentNode, nodeToJoinAt);				
-			}
-			// write nodes for the interface
-			for (String interfaceObj : eaug.interfaces) {
-				String interfaceString = "interface_" + interfaceObj;
-				if (!vertexLabels.containsKey(interfaceString)) {
-					 vertexLabels.put(interfaceString, vertexLabels.size());	 
-				 }
-				 int nodeLabelIndex = vertexLabels.get(interfaceString);
-				 
-				 writer.write("v " + nodeNumber + " " + nodeLabelIndex+ "\n");
-				 
-				 ConstantNode interfaceNode = new ConstantNode("DummyInterfaceType", "Interface", interfaceString); 
-				 vertexNumbers.put(interfaceNode, nodeNumber);
-				 
-				 nodeNumber+=1;
+				// write nodes for the interface
+				for (String interfaceObj : eaug.interfaces) {
+					String interfaceString = "interface_" + interfaceObj;
+					if (!vertexLabels.containsKey(interfaceString)) {
+						 vertexLabels.put(interfaceString, vertexLabels.size());	 
+					 }
+					 int nodeLabelIndex = vertexLabels.get(interfaceString);
+					 
+					 writer.write("v " + nodeNumber + " " + nodeLabelIndex+ "\n");
+					 
+					 ConstantNode interfaceNode = new ConstantNode("DummyInterfaceType", "Interface", interfaceString); 
+					 vertexNumbers.put(interfaceNode, nodeNumber);
+					 
+					 nodeNumber+=1;
+				}
 			}
 			
 			//
 			writeEdgesInAug(edgeLabels, writer, aug, vertexNumbers);
-			for (APIUsageGraph relAug : eaug.related) {
-				writeEdgesInAug(edgeLabels, writer, relAug, vertexNumbers, equivalentNodeToJoinPoint);				
+			
+			if (!TURN_OFF_EXTENSIONS) {
+				for (APIUsageGraph relAug : eaug.related) {
+					writeEdgesInAug(edgeLabels, writer, relAug, vertexNumbers, equivalentNodeToJoinPoint);				
+				}
 			}
 			
 			writer.write("-\n");

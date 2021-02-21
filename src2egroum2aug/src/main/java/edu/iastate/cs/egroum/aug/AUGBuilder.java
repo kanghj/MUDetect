@@ -72,6 +72,7 @@ public class AUGBuilder {
 
     private APIUsageExample toAUG(EGroumGraph groum) {
         LOGGER.info("Converting to AUG: " + groum.getFilePath() + " " + groum.getName());
+        System.out.println("Converting to AUG: " + groum.getFilePath() + " " + groum.getName());
         APIUsageExampleBuilder builder = APIUsageExampleBuilder.buildAUG(
                 new Location(groum.getProjectName(), groum.getFilePath(), getMethodSignature(groum)));
         for (EGroumNode node : groum.getNodes()) {
@@ -97,7 +98,17 @@ public class AUGBuilder {
     	String typeName = groum.getName().split("\\.")[0];
     	APIUsageExample aug = toAUG(groum);
     	
-    	CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(source, basePath, projectName, classpath);
+//    	CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(source, basePath, projectName, classpath);
+    	CompilationUnit cu;
+		try {
+			cu = (CompilationUnit) JavaASTUtil.parseSource(source, basePath, projectName, classpath);
+		} catch (Exception e) {
+			if (EGroumBuilder.USE_FALLBACK) { // HJ: skip classpaths stuff if too hard
+				cu = (CompilationUnit) JavaASTUtil.parseSource(source);
+			} else {
+				throw new RuntimeException(e);
+			}
+		}
     	
     	for (int i = 0; i < cu.types().size(); i++)
 			if (cu.types().get(i) instanceof TypeDeclaration) {

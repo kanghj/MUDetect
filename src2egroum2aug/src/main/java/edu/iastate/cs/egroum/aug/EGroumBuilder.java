@@ -15,6 +15,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class EGroumBuilder {
+	
+	public static boolean USE_FALLBACK = false;
 	private final AUGConfiguration configuration;
 
 	public EGroumBuilder(AUGConfiguration configuration) {
@@ -381,7 +383,16 @@ public class EGroumBuilder {
 	 */
 	public ArrayList<EGroumGraph> buildGroums(String sourceCode, String path, String name, String[] classpaths) {
 		ArrayList<EGroumGraph> groums = new ArrayList<>();
-		CompilationUnit cu = (CompilationUnit) JavaASTUtil.parseSource(sourceCode, path, name, classpaths);
+		CompilationUnit cu;
+		try {
+			cu = (CompilationUnit) JavaASTUtil.parseSource(sourceCode, path, name, classpaths);
+		} catch (Exception e) {
+			if (USE_FALLBACK) { // HJ: skip classpaths stuff if too hard
+				cu = (CompilationUnit) JavaASTUtil.parseSource(sourceCode);
+			} else {
+				throw new RuntimeException(e);
+			}
+		}
 		for (int i = 0; i < cu.types().size(); i++)
 			if (cu.types().get(i) instanceof TypeDeclaration) {
 				System.out.println("buildGroums: found " + ((TypeDeclaration) cu.types().get(i)).getName());
@@ -398,6 +409,7 @@ public class EGroumBuilder {
 		// hence if a method matches, we want to grab information from the entire file 
 		boolean typeMatches = false; 
 		for (MethodDeclaration method : type.getMethods()) {
+//			System.out.println("checking method = " + method.getName());
 			if (configuration.usageExamplePredicate.matches(method)) {
 				typeMatches = true;
 				break;
@@ -409,14 +421,15 @@ public class EGroumBuilder {
 			if (configuration.usageExamplePredicate.matches(method) // either the method uses the API
 					|| (typeMatches && method.isConstructor())) { // or we want the constructor of a type that uses the API somewhere
 
-				ITypeBinding typeBind = type.resolveBinding();
-				ITypeBinding superTypeBind = typeBind.getSuperclass();
-				ITypeBinding[] interfaceBinds = typeBind.getInterfaces();
-
-				
-				
+//				ITypeBinding typeBind = type.resolveBinding();
+//				ITypeBinding superTypeBind = typeBind.getSuperclass();
+//				ITypeBinding[] interfaceBinds = typeBind.getInterfaces();
+//
+//				
+//				
 				EGroumGraph g = buildGroum(method, path, prefix + type.getName().getIdentifier() + ".");
 				if (configuration.usageExamplePredicate.matches(g)) {
+//					System.out.println("adding matched groum");
 					groums.add(g);
 				}
 			}

@@ -79,9 +79,10 @@ public class EnhancedAUG {
 			}
 			boolean isFieldInit = ((APIUsageExample)aug).getLocation().getMethodSignature().contains("__FieldOfClass__");
 			if (isFieldInit) {
+				System.out.println("skipping due to field init: method signature is " + ((APIUsageExample)aug).getLocation().getMethodSignature());
 				continue;
 			}
-			
+			System.out.println("making one eaug");
 			
 			result.add(new EnhancedAUG(aug, relat, relatJoinPoint, aug.interfaces));
 		}
